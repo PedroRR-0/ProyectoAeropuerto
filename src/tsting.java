@@ -15,11 +15,11 @@ public class tsting {
             con = DriverManager.getConnection("jdbc:mariadb://localhost:3306/Proy3TE4","root","123456");
             System.out.println("Tenemos conexión...");
             Statement encapsulaCons = con.createStatement();
-            String consulta = "SELECT * FROM usuario";
+            String consulta = "SELECT * FROM vuelos";
             ResultSet resulCons = encapsulaCons.executeQuery(consulta);
             System.out.println("Cabecera del listado a imprimir");
             while (resulCons.next()) { //Recorre registro a registro el resultado obtenido
-                System.out.println("Campo " + resulCons.getString("nombre"));
+                System.out.println("Campo " + resulCons.getString("fecha"));
             }
 
             encapsulaCons.close();
