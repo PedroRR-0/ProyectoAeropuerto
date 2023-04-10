@@ -1,0 +1,62 @@
+{
+  "aviones": {
+    "avion": [
+      {
+        "idAvion": 1,
+        "matricula": "EC-CMZ",
+        "modelo": "Airbus A-320",
+        "asientos": 200,
+        "estado": 1
+      },
+      {
+        "idAvion": 2,
+        "matricula": "EC-LBR",
+        "modelo": "Boeing 737",
+        "asientos": 220,
+        "estado": 1
+      },
+      {
+        "idAvion": 3,
+        "matricula": "EC-TPL",
+        "modelo": "Airbus A-340",
+        "asientos": 300,
+        "estado": 1
+      },
+      {
+        "idAvion": 4,
+        "matricula": "EC-KEG",
+        "modelo": "Boeing 727",
+        "asientos": 160,
+        "estado": 1
+      },
+      {
+        "idAvion": 5,
+        "matricula": "EC-CHB",
+        "modelo": "Airbus A-320",
+        "asientos": 200,
+        "estado": 0
+      },
+      {
+        "idAvion": 6,
+        "matricula": "EC-FCL",
+        "modelo": "Boeing 737",
+        "asientos": 220,
+        "estado": 0
+      },
+      {
+        "idAvion": 7,
+        "matricula": "EC-PLH",
+        "modelo": "Airbus A-340",
+        "asientos": 300,
+        "estado": 0
+      },
+      {
+        "idAvion": 8,
+        "matricula": "EC-EMC",
+        "modelo": "Boeing 727",
+        "asientos": 160,
+        "estado": 0
+      }
+    ]
+  }
+}
