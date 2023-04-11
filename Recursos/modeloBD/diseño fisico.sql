@@ -32,8 +32,8 @@ CREATE OR REPLACE TABLE miembros (
   apellido1 VARCHAR(45) ,
   apellido2 VARCHAR(45) ,
   direccion VARCHAR(45) ,
-  categoria VARCHAR(45) ,
-  edad INT ,
+  categoria ENUM('azafato', 'piloto', 'copiloto', 'ingeniero de vuelo'),
+  fechaNacimiento DATE,
   telefono CHAR(12) ,
   PRIMARY KEY (idTripulacion)
   );
@@ -48,7 +48,7 @@ CREATE OR REPLACE TABLE pasajeros (
   nombre VARCHAR(45) ,
   apellido1 VARCHAR(45) ,
   apellido2 VARCHAR(45) ,
-  edad INT ,
+  fechaNacimiento DATE,
   ecorreo VARCHAR(45) ,
   foto LONGBLOB ,
   telefono CHAR(12) ,
