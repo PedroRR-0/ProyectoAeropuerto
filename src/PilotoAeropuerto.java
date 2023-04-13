@@ -1,8 +1,11 @@
 import javax.swing.*;
+import java.sql.Connection;
 
 public class PilotoAeropuerto {
     public static void main(String[] args) {
-        login metodosLogin = new login();
+        Login metodosLogin = new Login();
+        Connection con = metodosLogin.getConnection();
+        metodosLogin.cargarUsuariosDesdeXml(con);
         metodosLogin.mostrar();
     }
 }
