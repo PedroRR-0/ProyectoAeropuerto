@@ -6,6 +6,8 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import java.awt.*;
 import java.io.InputStream;
+import java.net.URL;
+import java.sql.*;
 
 public class login {
 
@@ -20,7 +22,7 @@ public class login {
         panel.setLayout(null);
 
 
-        InputStream is = getClass().getResourceAsStream("C:\\Users\\Manuel\\Desktop\\swing\\hola\\src\\fuentes\\Roboto-Regular.ttf"); // Reemplaza "/ruta/roboto.ttf" con la ruta real del archivo de fuente Roboto en tu proyecto
+        InputStream is = getClass().getResourceAsStream("Recursos/fuentes/FuenteAeropuerto.ttf"); // Reemplaza "/ruta/roboto.ttf" con la ruta real del archivo de fuente Roboto en tu proyecto
         Font robotoFont = null;
         try {
             robotoFont = Font.createFont(Font.TRUETYPE_FONT, is).deriveFont(14f); // Tamaño de fuente 14
@@ -63,12 +65,39 @@ public class login {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
+    public Connection getConnection(){
+        try {
+            //El método forName() carga el driver en el programa
+            Class.forName("org.mariadb.jdbc.Driver");
+        } catch (ClassNotFoundException cnfe) {
+            System.out.println(cnfe.getMessage());
+        }
+        Connection con;
+        try {
+            con = DriverManager.getConnection("jdbc:mariadb://localhost:3306/Proy3TE4","root","123456");
+            System.out.println("Tenemos conexión...");
+            Statement encapsulaCons = con.createStatement();
+            String consulta = "SELECT * FROM vuelos";
+            ResultSet resulCons = encapsulaCons.executeQuery(consulta);
+            System.out.println("Cabecera del listado a imprimir");
+            while (resulCons.next()) { //Recorre registro a registro el resultado obtenido
+                System.out.println("Campo " + resulCons.getString("fecha"));
+            }
+
+            encapsulaCons.close();
+            con.close();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return con;
+    }
 
     public void entradaCorrecta(){
 
     }
 
-    public void entradaInCorrecta(){
+    public void entradaIncorrecta(){
 
     }
 
