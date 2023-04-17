@@ -19,7 +19,7 @@ CREATE OR REPLACE TABLE aviones (
 
 
 -- -----------------------------------------------------
--- Table trayectos
+-- Tabla trayectos
 -- -----------------------------------------------------
 CREATE OR REPLACE TABLE trayectos (
   idTrayecto INT AUTO_INCREMENT,
@@ -30,7 +30,7 @@ CREATE OR REPLACE TABLE trayectos (
 
 
 -- -----------------------------------------------------
--- Table miembros
+-- Tabla miembros
 -- -----------------------------------------------------
 CREATE OR REPLACE TABLE miembros (
   idTripulacion INT AUTO_INCREMENT,
@@ -50,7 +50,7 @@ CREATE OR REPLACE TABLE miembros (
 
 -- -----------------------------------------------------
 -- -----------------------------------------------------
--- Table pasajeros
+-- Tabla pasajeros
 -- -----------------------------------------------------
 CREATE OR REPLACE TABLE pasajeros (
   idPasajeros INT AUTO_INCREMENT,
@@ -66,7 +66,7 @@ CREATE OR REPLACE TABLE pasajeros (
 );
 
 -- -----------------------------------------------------
--- Table vuelos
+-- Tabla vuelos
 -- -----------------------------------------------------
 CREATE OR REPLACE TABLE vuelos (
   idVuelo INT AUTO_INCREMENT,
@@ -81,15 +81,17 @@ CREATE OR REPLACE TABLE vuelos (
     REFERENCES aviones (idAvion)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
+    -- Hemos restringido el comportamiento de esta FK porque no se pueden borrar aviones
   CONSTRAINT fk_vuelos_trayectos
     FOREIGN KEY (idTrayecto)
     REFERENCES trayectos (idTrayecto)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
+    -- Hemos restringido el comportamiento de esta FK porque no se pueden borrar trayectos
 );
 
 -- -----------------------------------------------------
--- Table Pasajeros_vuelos
+-- Tabla Pasajeros_vuelos
 -- -----------------------------------------------------
 CREATE OR REPLACE TABLE Pasajeros_vuelos (
   idVuelo INT,
@@ -101,6 +103,7 @@ CREATE OR REPLACE TABLE Pasajeros_vuelos (
     REFERENCES vuelos (idVuelo, idAvion)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
+    -- Podemos establecer comportamiento en cascada sin preocuparnos de la propagación ya que esta es una tabla intermedia
   CONSTRAINT fk_vuelos_has_pasajeros_pasajeros
     FOREIGN KEY (idPasajeros)
     REFERENCES pasajeros (idPasajeros)
@@ -112,7 +115,7 @@ CREATE OR REPLACE TABLE Pasajeros_vuelos (
 
 
 -- -----------------------------------------------------
--- Table miembros_vuelos
+-- Tabla miembros_vuelos
 -- -----------------------------------------------------
 CREATE OR REPLACE TABLE miembros_vuelos (
   idVuelo INT,
@@ -124,6 +127,8 @@ CREATE OR REPLACE TABLE miembros_vuelos (
     REFERENCES vuelos (idVuelo, idAvion)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
+    -- Podemos establecer comportamiento en cascada sin preocuparnos de la propagación ya que esta es una tabla intermedia
+    -- Tras consultar con el profesor de programación, hemos decidido que esta tabla será análoga a la tabla Asignados del enunciado
   CONSTRAINT fk_vuelos_has_miembros_miembros
     FOREIGN KEY (idTripulacion)
     REFERENCES miembros (idTripulacion)
