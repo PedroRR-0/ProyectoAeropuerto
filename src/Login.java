@@ -68,7 +68,11 @@ public class Login {
             if (autenticado.get()) {
                 entradaCorrecta();
                 frame.dispose(); // Cierra la ventana de login si el usuario se autentica correctamente
-                new Pestanias();
+                try {
+                    new Pestanias();
+                } catch ( SQLException e ) {
+                    throw new RuntimeException ( e );
+                }
             } else {
                 entradaIncorrecta();
             }
