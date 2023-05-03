@@ -19,7 +19,7 @@ public class CargaDeDatos {
     public void cargarUsuariosDesdeXml( Connection con) {
         try {
             // Cargar el archivo XML
-            File                   archivoXml = new File("C:\\Users\\lhuji\\Desktop\\ProyectoAeropuerto\\Recursos\\UsuariosHoy.xml");
+            File                   archivoXml = new File("C:\\Users\\damda\\Desktop\\ProyectoAeropuerto\\Recursos\\UsuariosHoy.xml");
             DocumentBuilderFactory factory    = DocumentBuilderFactory.newInstance();
             DocumentBuilder        builder    = factory.newDocumentBuilder();
             Document               doc        = builder.parse(archivoXml);
@@ -49,7 +49,7 @@ public class CargaDeDatos {
     public void cargaAvionesDesdeJson(Connection con) {
         try {
             // Cargar el archivo JSON
-            BufferedReader reader = new BufferedReader(new FileReader("C:\\Users\\lhuji\\Desktop\\ProyectoAeropuerto\\Recursos\\Aviones.json"));
+            BufferedReader reader = new BufferedReader(new FileReader("C:\\Users\\damda\\Desktop\\ProyectoAeropuerto\\Recursos\\Aviones.json"));
 
             // Crear una instancia de Gson
             Gson gson = new Gson();
