@@ -1,15 +1,18 @@
+package modelo;
+
 public class Avion {
     private int idAvion;
     private String matricula;
     private String modelo;
-    private int    asientos;
-    private int    estado;
+    private int asientos;
+    private int estado;
+
     public Avion ( int idAvion , String matricula , String modelo , int asientos , int estado ) {
-        this.idAvion   = idAvion;
+        this.idAvion = idAvion;
         this.matricula = matricula;
-        this.modelo    = modelo;
-        this.asientos  = asientos;
-        this.estado    = estado;
+        this.modelo = modelo;
+        this.asientos = asientos;
+        this.estado = estado;
     }
 
     public int getIdAvion ( ) {
@@ -51,9 +54,10 @@ public class Avion {
     public void setEstado ( int estado ) {
         this.estado = estado;
     }
+
     @Override
-    public String toString() {
-        return "Avion{" +
+    public String toString ( ) {
+        return "modelo.Avion{" +
                 "idAvion=" + idAvion +
                 ", matricula='" + matricula + '\'' +
                 ", modelo='" + modelo + '\'' +

@@ -1,3 +1,5 @@
+package modelo;
+
 import java.sql.*;
 
 public class ConexionBD {
@@ -37,4 +39,5 @@ public class ConexionBD {
             e.printStackTrace();
         }
     }
+
 }

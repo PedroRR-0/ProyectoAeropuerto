@@ -1,3 +1,5 @@
+package vista;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -16,7 +18,7 @@ import java.sql.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Login {
-
+    private Connection conexion;
     public Connection getConnection(){
         try {
             //El método forName() carga el driver en el programa
@@ -69,7 +71,7 @@ public class Login {
                 entradaCorrecta();
                 frame.dispose(); // Cierra la ventana de login si el usuario se autentica correctamente
                 try {
-                    new Pestanias();
+                    new Pestanias ();
                 } catch ( SQLException e ) {
                     throw new RuntimeException ( e );
                 }
@@ -105,5 +107,13 @@ public class Login {
     }
     public void entradaIncorrecta(){
         JOptionPane.showMessageDialog(null, "Usuario o contraseña incorrectos. Por favor, inténtelo de nuevo.");
+    }
+    public void cerrarConexion() {
+        try {
+            // Cerrar la conexión
+            conexion.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

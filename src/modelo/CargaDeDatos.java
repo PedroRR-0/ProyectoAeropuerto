@@ -1,6 +1,9 @@
+package modelo;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import modelo.Avion;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -49,18 +52,18 @@ public class CargaDeDatos {
     public void cargaAvionesDesdeJson(Connection con) {
         try {
             // Cargar el archivo JSON
-            BufferedReader reader = new BufferedReader(new FileReader("C:\\Users\\lhuji\\Desktop\\ProyectoAeropuerto\\Recursos\\Aviones.json"));
+            BufferedReader ArchivoJSON = new BufferedReader(new FileReader("Recursos/Aviones.json"));
 
             // Crear una instancia de Gson
             Gson gson = new Gson();
 
             // Deserializar el JSON a una lista de objetos de la clase Avion
-            JsonObject  jsonObject = gson.fromJson(reader, JsonObject.class);
+            JsonObject  jsonObject = gson.fromJson(ArchivoJSON, JsonObject.class);
             JsonArray   jsonArray  = jsonObject.getAsJsonObject("aviones").getAsJsonArray("avion");
             List<Avion> aviones    = gson.fromJson(jsonArray, new TypeToken <List<Avion>> (){}.getType());
 
             // Insertar los objetos en la base de datos
-            for (Avion avion : aviones) {
+            for ( Avion avion : aviones) {
                 PreparedStatement stmt = con.prepareStatement("INSERT INTO `aviones` (`idAvion`, `matricula`, `modelo`, `numAsientos`, `estado`) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE idAvion = idAvion;");
                 stmt.setInt(1, avion.getIdAvion());
                 stmt.setString(2, avion.getMatricula());
