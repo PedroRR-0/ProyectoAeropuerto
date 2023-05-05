@@ -1,9 +1,11 @@
-package vista;
+package controlador;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import vista.Pestanias;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -71,7 +73,7 @@ public class Login {
                 entradaCorrecta();
                 frame.dispose(); // Cierra la ventana de login si el usuario se autentica correctamente
                 try {
-                    new Pestanias ();
+                    new Pestanias();
                 } catch ( SQLException e ) {
                     throw new RuntimeException ( e );
                 }

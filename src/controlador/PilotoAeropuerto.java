@@ -1,9 +1,7 @@
 package controlador;
 
 import modelo.CargaDeDatos;
-import vista.Login;
 
-import javax.swing.*;
 import java.sql.Connection;
 
 

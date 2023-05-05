@@ -22,7 +22,7 @@ public class CargaDeDatos {
     public void cargarUsuariosDesdeXml( Connection con) {
         try {
             // Cargar el archivo XML
-            File                   archivoXml = new File("C:\\Users\\lhuji\\Desktop\\ProyectoAeropuerto\\Recursos\\UsuariosHoy.xml");
+            File                   archivoXml = new File("Recursos\\UsuariosHoy.xml");
             DocumentBuilderFactory factory    = DocumentBuilderFactory.newInstance();
             DocumentBuilder        builder    = factory.newDocumentBuilder();
             Document               doc        = builder.parse(archivoXml);
