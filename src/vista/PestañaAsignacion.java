@@ -1,6 +1,8 @@
 package vista;
 
 import modelo.ConexionBD;
+import modelo.Miembro;
+import modelo.Miembro2;
 import modelo.Vuelo;
 
 import javax.swing.*;
@@ -95,10 +97,10 @@ public class PestañaAsignacion {
         centerLeft.add(horaVuelo);
         centerLeft.add(tripuLabel);
         // Crear un campo de texto para mostrar los miembros
-        JList < String > miembrosList=new JList <>();
+        JList<Miembro2> miembrosList=new JList<>();
 
         // Crear un modelo de lista por defecto y agregarlo a la lista
-        DefaultListModel < String > miembrosModel=new DefaultListModel <>();
+        DefaultListModel <Miembro2> miembrosModel=new DefaultListModel <>();
         miembrosList.setModel(miembrosModel);
         JScrollPane scrollPane=new JScrollPane(miembrosList); // Agregar un JScrollPane para permitir desplazamiento
 
@@ -106,21 +108,22 @@ public class PestañaAsignacion {
         ConexionBD conexionBD2=new ConexionBD();
         ResultSet salida=conexionBD2.ejecutarConsulta("SELECT * FROM miembros");
         while ( salida.next() ) {
-            String nombre=salida.getString("nombre");
-            String apellido1=salida.getString("apellido1");
-            String apellido2=salida.getString("apellido2");
-            String miembro=apellido1+" "+apellido2+", "+nombre;
-            miembrosModel.addElement(miembro);
+            Miembro2 miembro = new Miembro2(salida.getInt("idTripulacion"),
+                    salida.getString("nombre"),
+                    salida.getString("apellido1"),
+                    salida.getString("apellido2"));
+                    miembrosModel.addElement(miembro);
         }
-        JTextArea tripSelec = new JTextArea(20,20);
-        tripSelec.setSize(20,20);
+        JTextArea tripSelec = new JTextArea();
         miembrosList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 if (e.getValueIsAdjusting()){
-                    String selec = miembrosList.getSelectedValue();
+                    Miembro2 selec = miembrosList.getSelectedValue();
                     if (selec!=null){
-                        tripSelec.setText(selec+"; "+tripSelec.getText());
+                        if (miembrosModel.getSize()<5) {
+                            tripSelec.setText(selec + "; " + tripSelec.getText());
+                        }
                     }
                 }
             }
