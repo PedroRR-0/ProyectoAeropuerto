@@ -74,7 +74,7 @@ public class CargaDeDatos {
             }
 
             System.out.println("Aviones cargados desde el archivo JSON");
-            System.out.println (aviones);
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
