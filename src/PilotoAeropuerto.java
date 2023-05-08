@@ -9,6 +9,7 @@ public class PilotoAeropuerto {
         Connection   con          = metodosLogin.getConnection();
         cd.cargarUsuariosDesdeXml(con);
         cd.cargaAvionesDesdeJson (con);
+        cd.cargaTrayectosDesdeDat(con);
         metodosLogin.mostrar();
     }
 }

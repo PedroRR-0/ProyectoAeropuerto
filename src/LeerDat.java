@@ -14,7 +14,7 @@ import java.io.InputStreamReader;
 
 public class LeerDat {
     public static void main(String[] args) {
-        String filePath = "C:\\Users\\damda\\Desktop\\ProyectoAeropuerto\\src\\Trayectos.dat";
+        String filePath = "src/Trayectos.dat";
         try {
             FileInputStream fileInputStream = new FileInputStream(filePath);
             DataInputStream dataInputStream = new DataInputStream(fileInputStream);

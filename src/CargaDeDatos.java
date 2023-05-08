@@ -7,9 +7,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+import java.io.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import com.google.gson.Gson;
@@ -19,7 +17,7 @@ public class CargaDeDatos {
     public void cargarUsuariosDesdeXml( Connection con) {
         try {
             // Cargar el archivo XML
-            File                   archivoXml = new File("C:\\Users\\damda\\Desktop\\ProyectoAeropuerto\\Recursos\\UsuariosHoy.xml");
+            File                   archivoXml = new File("Recursos/UsuariosHoy.xml");
             DocumentBuilderFactory factory    = DocumentBuilderFactory.newInstance();
             DocumentBuilder        builder    = factory.newDocumentBuilder();
             Document               doc        = builder.parse(archivoXml);
@@ -49,7 +47,7 @@ public class CargaDeDatos {
     public void cargaAvionesDesdeJson(Connection con) {
         try {
             // Cargar el archivo JSON
-            BufferedReader reader = new BufferedReader(new FileReader("C:\\Users\\damda\\Desktop\\ProyectoAeropuerto\\Recursos\\Aviones.json"));
+            BufferedReader reader = new BufferedReader(new FileReader("Recursos/Aviones.json"));
 
             // Crear una instancia de Gson
             Gson gson = new Gson();
@@ -74,6 +72,32 @@ public class CargaDeDatos {
             System.out.println (aviones);
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    // Carga de los trayectos desde fichero .dat
+    public void cargaTrayectosDesdeDat(Connection con) {
+
+        String filePath = "src/Trayectos.dat";
+        try {
+            // Extraer los datos del fichero binario
+            FileInputStream fileInputStream = new FileInputStream(filePath);
+            DataInputStream dataInputStream = new DataInputStream(fileInputStream);
+            while (dataInputStream.available() > 0) {
+                int number = dataInputStream.readInt();
+                String word1 = new String(dataInputStream.readUTF().getBytes("ISO-8859-1"), "UTF-8");
+                String word2 = new String(dataInputStream.readUTF().getBytes("ISO-8859-1"), "UTF-8");
+                // Insertar datos en tabla trayectos
+                PreparedStatement stmt = con.prepareStatement("INSERT INTO trayectos VALUES (?,?,?) ON DUPLICATE KEY UPDATE idTrayecto = idTrayecto;");
+                stmt.setInt(1,number);
+                stmt.setString(2,word1);
+                stmt.setString(3,word2);
+                stmt.executeUpdate();
+            }
+            System.out.println("Trayectos cargados desde el arhivo DAT");
+            dataInputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
