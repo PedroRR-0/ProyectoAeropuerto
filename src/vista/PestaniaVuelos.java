@@ -44,6 +44,7 @@ public class PestaniaVuelos extends JPanel {
 
         }
         JTable            flightsTable      = new JTable ( contenidoTablaVuelos );
+        flightsTable.setDefaultEditor(Object.class,null);
         JScrollPane       flightsScrollPane = new JScrollPane ( flightsTable );
         tablaVuelos.add ( flightsScrollPane , BorderLayout.CENTER );
 
