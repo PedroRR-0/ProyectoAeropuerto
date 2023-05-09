@@ -18,6 +18,7 @@ public class PestañaPasajeros {
         String[] columnNames = { "idPasajero" ,"nombre" ,"apellido1" ,"apellido2" ,"edad" ,"telefono" ,"ecorreo" ,"direccion" ,"foto" };
         Object[][] data = { { 1 ,"Juan" ,"Perez" ,"Gomez" ,30 ,"123456789" ,"juan.perez@example.com" ,"Calle 123, Ciudad" ,"foto1.jpg" } ,{ 2 ,"Maria" ,"Lopez" ,"Gonzalez" ,25 ,"987654321" ,"maria.lopez@example.com" ,"Avenida 456, Pueblo" ,"foto2.jpg" } ,{ 3 ,"Pedro" ,"Gomez" ,"Rodriguez" ,40 ,"456789123" ,"pedro.gomez@example.com" ,"Carretera 789, Villa" ,"foto3.jpg" } };
         JTable passengerTable = new JTable ( data ,columnNames );
+        passengerTable.setDefaultEditor(Object.class, null);
         JScrollPane passengerScrollPane = new JScrollPane ( passengerTable );
         tablePanel.add ( passengerScrollPane ,BorderLayout.CENTER );
 

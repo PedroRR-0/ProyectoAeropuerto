@@ -1,16 +1,6 @@
 package vista;
 
-import modelo.ConexionBD;
-import modelo.Miembro;
-
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableModel;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public
@@ -51,8 +41,7 @@ class Pestanias extends JFrame {
         pestañaVuelos.pestañaVuelos (tabbedPane);
 
         // Llamada a la pestaña Asignación
-        PestañaAsignacion pestañaAsignacion = new PestañaAsignacion ();
-        pestañaAsignacion.pestañaAsignacion (assignmentsPanel, tabbedPane);
+        PestañaAsignacion pestañaAsignacion = new PestañaAsignacion (tabbedPane);
 
         // Agregar las pestañas a la ventana
         add ( tabbedPane );

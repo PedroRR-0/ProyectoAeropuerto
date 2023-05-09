@@ -21,6 +21,7 @@ public class Miembro {
         this.categoria = categoria;
     }
 
+
     public String getNombre ( ) {
         return nombre;
     }
@@ -98,4 +99,5 @@ public class Miembro {
                 ", categoria='" + categoria + '\'' +
                 '}';
     }
+
 }
