@@ -26,7 +26,7 @@ public class anadirVuelo extends JFrame {
         datosVuelo.add(idAvionLabel);
         JComboBox<String> idAvionesCombo = new JComboBox<>();
         ConexionBD con = new ConexionBD();
-        String query = "SELECT idAvion from aviones order by 1";
+        String query = "SELECT idAvion from aviones where estado=1 order by 1";
         ResultSet resul = con.ejecutarConsulta(query);
         while(true){
             try {

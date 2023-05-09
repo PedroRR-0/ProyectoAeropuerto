@@ -41,7 +41,7 @@ public class editarVuelo extends JFrame {
         }
         datosVuelo.add(idVuelosCombo);
         datosVuelo.add(idAvionLabel);
-        query = "SELECT idAvion from aviones order by 1";
+        query = "SELECT idAvion from aviones where estado=1 order by 1";
         resul = con.ejecutarConsulta(query);
         while(true){
             try {

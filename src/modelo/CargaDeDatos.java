@@ -14,6 +14,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import com.google.gson.Gson;
 
+import java.sql.SQLException;
 import java.util.List;
 public class CargaDeDatos {
     public void cargarUsuariosDesdeXml( Connection con) {
@@ -71,16 +72,15 @@ public class CargaDeDatos {
             }
 
             System.out.println("Aviones cargados desde el archivo JSON");
-            System.out.println (aviones);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     // Carga de los trayectos desde fichero .dat
-    public void cargaTrayectosDesdeDat(Connection con) {
+    public void cargaTrayectosDesdeDat(Connection con) throws SQLException {
 
-        String filePath = "src/Trayectos.dat";
+        String filePath = "Recursos/Trayectos.dat";
         try {
             // Extraer los datos del fichero binario
             FileInputStream fileInputStream = new FileInputStream(filePath);
@@ -90,18 +90,23 @@ public class CargaDeDatos {
                 String word1 = new String(dataInputStream.readUTF().getBytes("ISO-8859-1"), "UTF-8");
                 String word2 = new String(dataInputStream.readUTF().getBytes("ISO-8859-1"), "UTF-8");
                 // Insertar datos en tabla trayectos
-                PreparedStatement stmt = con.prepareStatement("INSERT INTO trayectos VALUES (?,?,?) ON DUPLICATE KEY UPDATE idTrayecto = idTrayecto;");
-                stmt.setInt(1,number);
-                stmt.setString(2,word1);
-                stmt.setString(3,word2);
+                PreparedStatement stmt = con.prepareStatement("INSERT INTO trayectos (idTrayecto, origen, destino) VALUES (?, ?, ?)");
+                stmt.setInt(1, number);
+                stmt.setString(2, word1);
+                stmt.setString(3, word2);
                 stmt.executeUpdate();
             }
-            System.out.println("Trayectos cargados desde el arhivo DAT");
+
+            System.out.println("Trayectos cargados desde el archivo DAT");
             dataInputStream.close();
-        } catch (Exception e) {
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-
 }
+
+
+
