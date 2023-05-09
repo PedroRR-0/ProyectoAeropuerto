@@ -80,7 +80,7 @@ public class CargaDeDatos {
     // Carga de los trayectos desde fichero .dat
     public void cargaTrayectosDesdeDat(Connection con) {
 
-        String filePath = "src/Trayectos.dat";
+        String filePath = "Recursos/Trayectos.dat";
         try {
             // Extraer los datos del fichero binario
             FileInputStream fileInputStream = new FileInputStream(filePath);

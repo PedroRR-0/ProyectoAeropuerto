@@ -27,12 +27,12 @@ public class PestañaPasajeros {
         ResultSet resultado = conexionBD.ejecutarConsulta("SELECT * FROM pasajeros");
         ResultSet resultado3 = conexionBD.ejecutarConsulta("SELECT edad(fechaNacimiento) as e FROM pasajeros;");
         DefaultTableModel contenidoTablaPasajeros = new DefaultTableModel ( new Object[][]{}, columnNames );
+        boolean flag;
         while (resultado.next()){
-
+            flag = false;
+            resultado3.next();
             ResultSet resultado2 = conexionBD.ejecutarConsulta ( "SELECT * FROM pasajeros_vuelos where idPasajeros="+resultado.getInt("idPasajeros"));
-
-                while (resultado2.next()) {
-                    resultado2.getInt("idVuelo");
+            while(resultado2.next()) {
                     contenidoTablaPasajeros.addRow(new Object[]{
                             resultado.getInt("idPasajeros"),
                             resultado.getString("dni"),
@@ -44,8 +44,23 @@ public class PestañaPasajeros {
                             resultado.getString("ecorreo"),
                             resultado.getString("direccion"),
                             resultado2.getInt("idVuelo")
+
+                });
+                flag = true;
+            }
+                if (!flag) {
+                    contenidoTablaPasajeros.addRow(new Object[]{
+                            resultado.getInt("idPasajeros"),
+                            resultado.getString("dni"),
+                            resultado.getString("nombre"),
+                            resultado.getString("apellido1"),
+                            resultado.getString("apellido2"),
+                            resultado3.getString("e"),
+                            resultado.getString("telefono"),
+                            resultado.getString("ecorreo"),
+                            resultado.getString("direccion")
                     });
-        }
+                }
         }
         JTable passengerTable = new JTable (contenidoTablaPasajeros);
         passengerTable.setDefaultEditor(Object.class, null);

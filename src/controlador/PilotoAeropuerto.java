@@ -13,6 +13,7 @@ public class PilotoAeropuerto {
         Connection   Conexioninicial          = metodosLogin.getConnection();
         Cargainicial.cargarUsuariosDesdeXml(Conexioninicial);
         Cargainicial.cargaAvionesDesdeJson (Conexioninicial);
+        Cargainicial.cargaTrayectosDesdeDat(Conexioninicial);
         metodosLogin.mostrar();
     }
 }
