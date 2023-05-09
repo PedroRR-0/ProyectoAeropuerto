@@ -1,3 +1,7 @@
+package vista;
+
+import modelo.ConexionBD;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -7,9 +11,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class anadirVuelo extends JFrame {
+public class editarVuelo extends JFrame {
 
-    public anadirVuelo(){
+    public editarVuelo(String selec){
 
         this.setLayout(new BorderLayout());
         JLabel vueloLabel = new JLabel("VUELO");
@@ -17,13 +21,28 @@ public class anadirVuelo extends JFrame {
         vueloPanel.add(vueloLabel);
         this.add(vueloPanel, BorderLayout.NORTH);
         JPanel datosVuelo = new JPanel();
-        datosVuelo.setLayout(new GridLayout(6,2));
+        datosVuelo.setLayout(new GridLayout(7,2));
         JLabel idAvionLabel = new JLabel("ID AVION: ");
-        datosVuelo.add(idAvionLabel);
+        JLabel idVueloLabel = new JLabel("ID VUELO: ");
+        datosVuelo.add(idVueloLabel);
         JComboBox<String> idAvionesCombo = new JComboBox<>();
+        JComboBox<String> idVuelosCombo = new JComboBox<>();
         ConexionBD con = new ConexionBD();
-        String query = "SELECT idAvion from aviones order by 1";
+        String query = "SELECT idVuelo from vuelos order by 1";
         ResultSet resul = con.ejecutarConsulta(query);
+        while(true){
+            try {
+                if (!resul.next()) break;
+                idVuelosCombo.addItem(String.valueOf(resul.getInt("idVuelo")));
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+
+        }
+        datosVuelo.add(idVuelosCombo);
+        datosVuelo.add(idAvionLabel);
+        query = "SELECT idAvion from aviones order by 1";
+        resul = con.ejecutarConsulta(query);
         while(true){
             try {
                 if (!resul.next()) break;
@@ -83,15 +102,25 @@ public class anadirVuelo extends JFrame {
                     }
                 }
                 try {
+
                     PreparedStatement p = con.getConexion().prepareStatement("""
-                                INSERT INTO vuelos(fecha, horaSalida, horaLlegada, idAvion, idTrayecto)
-                                VALUES (?,?,?,?,?);
+                                UPDATE vuelos
+                                set fecha = ?,
+                                horaSalida = ?,
+                                horaLlegada = ?,
+                                idAvion = ?,
+                                idVuelo = ?,
+                                idTrayecto = ?
+                                where idVuelo = ?
+                                ;
                                     """);
                     p.setString(1,fechaTexfield.getText());
                     p.setString(2,horaSalidaTexfield.getText());
                     p.setString(3, horaLlegadaTexfield.getText());
                     p.setInt(4, Integer.parseInt((String) idAvionesCombo.getSelectedItem()));
-                    p.setInt(5,idTray);
+                    p.setInt(5, Integer.parseInt((String) idVuelosCombo.getSelectedItem()));
+                    p.setInt(6,idTray);
+                    p.setInt(7, Integer.parseInt(selec));
                     p.executeUpdate();
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
@@ -101,7 +130,6 @@ public class anadirVuelo extends JFrame {
         limpiar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                idAvionesCombo.setSelectedItem("1");
                 origenTexfield.setText("");
                 destinoTexfield.setText("");
                 fechaTexfield.setText("");

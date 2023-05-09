@@ -112,7 +112,7 @@ public class PestañaAsignacion {
                     salida.getString("nombre"),
                     salida.getString("apellido1"),
                     salida.getString("apellido2"));
-                    miembrosModel.addElement(miembro);
+            miembrosModel.addElement(miembro);
         }
         JTextArea tripSelec = new JTextArea();
         miembrosList.addListSelectionListener(new ListSelectionListener() {

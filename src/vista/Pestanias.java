@@ -37,8 +37,8 @@ class Pestanias extends JFrame {
         pestañaPasajeros.pestañaPasajeros(tabbedPane);
 
         // Llamada para la creación de la pestaña vuelos
-        PestañaVuelos pestañaVuelos = new PestañaVuelos ();
-        pestañaVuelos.pestañaVuelos (tabbedPane);
+        PestaniaVuelos pestañaVuelos = new PestaniaVuelos ();
+        tabbedPane.add("Vuelos",pestañaVuelos);
 
         // Llamada a la pestaña Asignación
         PestañaAsignacion pestañaAsignacion = new PestañaAsignacion (tabbedPane);
