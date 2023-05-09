@@ -1,18 +1,13 @@
-package modelo;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-import modelo.Avion;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+import java.io.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import com.google.gson.Gson;
@@ -22,7 +17,7 @@ public class CargaDeDatos {
     public void cargarUsuariosDesdeXml( Connection con) {
         try {
             // Cargar el archivo XML
-            File                   archivoXml = new File("Recursos\\UsuariosHoy.xml");
+            File                   archivoXml = new File("Recursos/UsuariosHoy.xml");
             DocumentBuilderFactory factory    = DocumentBuilderFactory.newInstance();
             DocumentBuilder        builder    = factory.newDocumentBuilder();
             Document               doc        = builder.parse(archivoXml);
@@ -52,18 +47,18 @@ public class CargaDeDatos {
     public void cargaAvionesDesdeJson(Connection con) {
         try {
             // Cargar el archivo JSON
-            BufferedReader ArchivoJSON = new BufferedReader(new FileReader("Recursos/Aviones.json"));
+            BufferedReader reader = new BufferedReader(new FileReader("Recursos/Aviones.json"));
 
             // Crear una instancia de Gson
             Gson gson = new Gson();
 
             // Deserializar el JSON a una lista de objetos de la clase Avion
-            JsonObject  jsonObject = gson.fromJson(ArchivoJSON, JsonObject.class);
+            JsonObject  jsonObject = gson.fromJson(reader, JsonObject.class);
             JsonArray   jsonArray  = jsonObject.getAsJsonObject("aviones").getAsJsonArray("avion");
             List<Avion> aviones    = gson.fromJson(jsonArray, new TypeToken <List<Avion>> (){}.getType());
 
             // Insertar los objetos en la base de datos
-            for ( Avion avion : aviones) {
+            for (Avion avion : aviones) {
                 PreparedStatement stmt = con.prepareStatement("INSERT INTO `aviones` (`idAvion`, `matricula`, `modelo`, `numAsientos`, `estado`) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE idAvion = idAvion;");
                 stmt.setInt(1, avion.getIdAvion());
                 stmt.setString(2, avion.getMatricula());
@@ -74,9 +69,35 @@ public class CargaDeDatos {
             }
 
             System.out.println("Aviones cargados desde el archivo JSON");
-
+            System.out.println (aviones);
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    // Carga de los trayectos desde fichero .dat
+    public void cargaTrayectosDesdeDat(Connection con) {
+
+        String filePath = "src/Trayectos.dat";
+        try {
+            // Extraer los datos del fichero binario
+            FileInputStream fileInputStream = new FileInputStream(filePath);
+            DataInputStream dataInputStream = new DataInputStream(fileInputStream);
+            while (dataInputStream.available() > 0) {
+                int number = dataInputStream.readInt();
+                String word1 = new String(dataInputStream.readUTF().getBytes("ISO-8859-1"), "UTF-8");
+                String word2 = new String(dataInputStream.readUTF().getBytes("ISO-8859-1"), "UTF-8");
+                // Insertar datos en tabla trayectos
+                PreparedStatement stmt = con.prepareStatement("INSERT INTO trayectos VALUES (?,?,?) ON DUPLICATE KEY UPDATE idTrayecto = idTrayecto;");
+                stmt.setInt(1,number);
+                stmt.setString(2,word1);
+                stmt.setString(3,word2);
+                stmt.executeUpdate();
+            }
+            System.out.println("Trayectos cargados desde el arhivo DAT");
+            dataInputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
