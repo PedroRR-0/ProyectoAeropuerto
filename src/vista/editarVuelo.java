@@ -13,7 +13,7 @@ import java.sql.SQLException;
 
 public class editarVuelo extends JFrame {
 
-    public editarVuelo(String selec){
+    public editarVuelo(String selec, JTable flightsTable){
 
         this.setLayout(new BorderLayout());
         JLabel vueloLabel = new JLabel("VUELO");
@@ -124,6 +124,19 @@ public class editarVuelo extends JFrame {
                     p.executeUpdate();
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
+                }
+                PestaniaVuelos p = null;
+                try {
+                    p = new PestaniaVuelos ();
+                }
+                catch (SQLException ex) {
+                    throw new RuntimeException ( ex );
+                }
+                try {
+                    p.actualizarTabla ( flightsTable );
+                }
+                catch (SQLException ex) {
+                    throw new RuntimeException ( ex );
                 }
             }
         });

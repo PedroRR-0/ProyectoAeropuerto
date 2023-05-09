@@ -13,7 +13,7 @@ import java.sql.SQLException;
 
 public class anadirVuelo extends JFrame {
 
-    public anadirVuelo(){
+    public anadirVuelo(JTable flightsTable){
 
         this.setLayout(new BorderLayout());
         JLabel vueloLabel = new JLabel("VUELO");
@@ -38,11 +38,11 @@ public class anadirVuelo extends JFrame {
 
         }
         datosVuelo.add(idAvionesCombo);
-        JLabel origenLabel = new JLabel("ORIGEN: ");
+        JLabel origenLabel = new JLabel("DESTINO: ");
         datosVuelo.add(origenLabel);
         JTextField origenTexfield = new JTextField();
         datosVuelo.add(origenTexfield);
-        JLabel destinoLabel = new JLabel("DESTINO: ");
+        JLabel destinoLabel = new JLabel("ORIGEN: ");
         datosVuelo.add(destinoLabel);
         JTextField destinoTexfield = new JTextField();
         datosVuelo.add(destinoTexfield);
@@ -99,6 +99,19 @@ public class anadirVuelo extends JFrame {
                     p.executeUpdate();
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
+                }
+                PestaniaVuelos p = null;
+                try {
+                    p = new PestaniaVuelos ();
+                }
+                catch (SQLException ex) {
+                    throw new RuntimeException ( ex );
+                }
+                try {
+                    p.actualizarTabla (flightsTable );
+                }
+                catch (SQLException ex) {
+                    throw new RuntimeException ( ex );
                 }
             }
         });
