@@ -84,6 +84,7 @@ public class PestañaTripulantes{
             public void valueChanged( ListSelectionEvent e ){
                 if(!e.getValueIsAdjusting()){
                     String selectedMember=miembrosList.getSelectedValue();
+
                     if(selectedMember!=null){
                         // Separar el teléfono del resto de la información
                         String[] memberInfo=selectedMember.split(" ");
@@ -95,12 +96,11 @@ public class PestañaTripulantes{
                             if(miembro.next()){
                                 nameLabel.setText(miembro.getString("nombre")+" "+miembro.getString("apellido1")+" "+miembro.getString("apellido2"));
                                 phoneLabel.setText("Teléfono: "+miembro.getString("telefono"));
-                                categoryLabel.setText("Categoría: "+miembro.getString("categoria"));
+                                categoryLabel.setText(" Categoría: "+miembro.getString("categoria"));
                                 addressLabel.setText("Dirección: "+miembro.getString("direccion"));
                                 fechaNacimientoLabel.setText("fechaNacimiento: "+miembro.getString("fechaNacimiento"));
 
-                                // Mostrar el panel de detalles y ocultar la lista de miembros
-                                cardLayout.show(cardPanel,"detallesMiembro");
+
                             }
                         }
                         catch (SQLException ex) {
@@ -130,7 +130,25 @@ public class PestañaTripulantes{
         JButton editButton=new JButton("Editar");
         editButton.addActionListener(new ActionListener(){
             public void actionPerformed( ActionEvent e ){
-                // Manejar la acción de editar aquí
+                String selectedMember=miembrosList.getSelectedValue();
+                if(selectedMember!=null) {
+                    EditarTripulante editar = new EditarTripulante();
+                    editar.actionPerformed(e, selectedMember, miembrosModel );
+                }else {
+                    JOptionPane.showMessageDialog(null, "Debe seleccionar un tripulante.");
+                }
+            }
+        });
+
+        JButton detallesButton=new JButton("Detalles");
+        detallesButton.addActionListener(new ActionListener(){
+            public void actionPerformed( ActionEvent e ){
+                String selectedMember=miembrosList.getSelectedValue();
+                if(selectedMember!=null) {
+                    cardLayout.show(cardPanel, "detallesMiembro");
+                }else {
+                    JOptionPane.showMessageDialog(null, "Debe seleccionar un tripulante.");
+                }
             }
         });
 
@@ -146,8 +164,14 @@ public class PestañaTripulantes{
         JButton deleteButton=new JButton("Eliminar");
         deleteButton.addActionListener(new ActionListener(){
             public void actionPerformed( ActionEvent e ){
-                EliminarTripulante Eliminar=new EliminarTripulante();
-                Eliminar.actionPerformed(e,miembrosList,miembrosModel);
+                String selectedMember=miembrosList.getSelectedValue();
+                if(selectedMember!=null) {
+                    EliminarTripulante Eliminar=new EliminarTripulante();
+                    Eliminar.actionPerformed(e,miembrosList,miembrosModel);
+                }else {
+                    JOptionPane.showMessageDialog(null, "Debe seleccionar un tripulante.");
+                }
+
             }
         });
 
@@ -155,6 +179,7 @@ public class PestañaTripulantes{
         buttonsPanel.add(editButton);
         buttonsPanel.add(addButton);
         buttonsPanel.add(deleteButton);
+        buttonsPanel.add(detallesButton);
 
         // Agregar el JPanel de botones al panel de la pestaña Tripulantes
         crewPanel.add(buttonsPanel,BorderLayout.EAST); // O en cualquier posición que desees
