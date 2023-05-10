@@ -5,11 +5,8 @@ import modelo.ConexionBD;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-<<<<<<< HEAD
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-=======
->>>>>>> main
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -25,13 +22,12 @@ public class PestañaPasajeros {
         tablePanel.setLayout ( new BorderLayout ( ) );
 
         // Tabla de pasajeros
-<<<<<<< HEAD
         String[] columnNames = { "idpasajeros" ,"nombre" ,"apellido1" ,"apellido2" ,"fechanacimiento" ,"telefono" ,"ecorreo" ,"direccion" ,"foto" };
         Object[][] data = obtenerDatosDeLaBaseDeDatos(); // Obtén los datos de la base de datos
         JTable tabla = new JTable(data, columnNames);
         DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
         JTable passengerTable = new JTable(tableModel);
-=======
+
         String[] columnNames = { "idPasajero" , "DNI", "nombre" ,"apellido1" ,"apellido2" ,
                 "edad" ,"telefono" ,"Correo electrónico" ,"direccion" , "ID Vuelo"};
         ConexionBD conexionBD = new ConexionBD ( );
@@ -75,7 +71,6 @@ public class PestañaPasajeros {
                 }
         }
         JTable passengerTable = new JTable (contenidoTablaPasajeros);
->>>>>>> main
         passengerTable.setDefaultEditor(Object.class, null);
         JScrollPane passengerScrollPane = new JScrollPane(passengerTable);
         tablePanel.add(passengerScrollPane, BorderLayout.CENTER);
