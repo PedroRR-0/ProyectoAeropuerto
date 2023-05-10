@@ -153,6 +153,7 @@ public class PestañaTripulantes{
         });
 
         JButton addButton=new JButton("Añadir");
+
         addButton.addActionListener(new ActionListener(){
 
             public void actionPerformed( ActionEvent e ){
@@ -162,6 +163,7 @@ public class PestañaTripulantes{
         });
 
         JButton deleteButton=new JButton("Eliminar");
+
         deleteButton.addActionListener(new ActionListener(){
             public void actionPerformed( ActionEvent e ){
                 String selectedMember=miembrosList.getSelectedValue();

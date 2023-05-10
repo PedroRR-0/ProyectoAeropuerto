@@ -1,7 +1,14 @@
 package vista;
 
+import modelo.ConexionBD;
+
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class PestañaPasajeros {
     public void pestañaPasajeros (JTabbedPane tabbedPane ) {
@@ -15,29 +22,71 @@ public class PestañaPasajeros {
         tablePanel.setLayout ( new BorderLayout ( ) );
 
         // Tabla de pasajeros
-        String[] columnNames = { "idPasajero" ,"nombre" ,"apellido1" ,"apellido2" ,"edad" ,"telefono" ,"ecorreo" ,"direccion" ,"foto" };
-        Object[][] data = { { 1 ,"Juan" ,"Perez" ,"Gomez" ,30 ,"123456789" ,"juan.perez@example.com" ,"Calle 123, Ciudad" ,"foto1.jpg" } ,{ 2 ,"Maria" ,"Lopez" ,"Gonzalez" ,25 ,"987654321" ,"maria.lopez@example.com" ,"Avenida 456, Pueblo" ,"foto2.jpg" } ,{ 3 ,"Pedro" ,"Gomez" ,"Rodriguez" ,40 ,"456789123" ,"pedro.gomez@example.com" ,"Carretera 789, Villa" ,"foto3.jpg" } };
-        JTable passengerTable = new JTable ( data ,columnNames );
+        String[] columnNames = { "idpasajeros" ,"nombre" ,"apellido1" ,"apellido2" ,"fechanacimiento" ,"telefono" ,"ecorreo" ,"direccion" ,"foto" };
+        Object[][] data = obtenerDatosDeLaBaseDeDatos(); // Obtén los datos de la base de datos
+        JTable tabla = new JTable(data, columnNames);
+        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
+        JTable passengerTable = new JTable(tableModel);
         passengerTable.setDefaultEditor(Object.class, null);
-        JScrollPane passengerScrollPane = new JScrollPane ( passengerTable );
-        tablePanel.add ( passengerScrollPane ,BorderLayout.CENTER );
+        JScrollPane passengerScrollPane = new JScrollPane(passengerTable);
+        tablePanel.add(passengerScrollPane, BorderLayout.CENTER);
+
+        // Cargar los datos de la base de datos en la tabla
+        ConexionBD conexionBD = new ConexionBD();
+        ResultSet resultado = conexionBD.ejecutarConsulta("SELECT * FROM pasajeros");
+        try {
+            while (resultado.next()) {
+                Object[] rowData = new Object[columnNames.length];
+                for (int i = 0; i < columnNames.length; i++) {
+                    rowData[i] = resultado.getObject(columnNames[i]);
+                }
+                tableModel.addRow(rowData);
+            }
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+        conexionBD.cerrarConexion();
 
         // Agregar el panel de tabla al panel principal de pasajeros
-        passengerPanel.add ( tablePanel ,BorderLayout.CENTER );
+        passengerPanel.add(tablePanel, BorderLayout.CENTER);
 
-        // Panel inferior con los botones de agregar, editar y eliminar
-        JButton addPassengerButton = new JButton ( "Agregar" );
-        JButton editPassengerButton = new JButton ( "Editar" );
-        JButton deletePassengerButton = new JButton ( "Eliminar" );
+            JButton agregar = new JButton ( "Agregar" );
+        agregar.addActionListener(new ActionListener(){
+            public void actionPerformed( ActionEvent e ){
+
+
+            }
+        });
+
+        JButton editar = new JButton ( "Editar" );
+
+        editar.addActionListener(new ActionListener(){
+            public void actionPerformed( ActionEvent e ){
+
+
+            }
+        });
+
+        JButton eliminar = new JButton ( "Eliminar" );
+        eliminar.addActionListener(new ActionListener(){
+            public void actionPerformed( ActionEvent e ){
+
+
+            }
+        });
+
+
         JPanel passengerButtonsPanel = new JPanel ( );
         passengerButtonsPanel.setBorder ( BorderFactory.createEmptyBorder ( 10 ,10 ,10 ,10 ) ); // Margen de 10 en todos los lados
         passengerButtonsPanel.setLayout ( new FlowLayout ( FlowLayout.CENTER ,20 ,10 ) ); // Mayor margen entre los botones
-        passengerButtonsPanel.add ( addPassengerButton );
-        passengerButtonsPanel.add ( editPassengerButton );
-        passengerButtonsPanel.add ( deletePassengerButton );
+        passengerButtonsPanel.add ( agregar );
+        passengerButtonsPanel.add ( editar );
+        passengerButtonsPanel.add ( eliminar );
         passengerPanel.add ( passengerButtonsPanel ,BorderLayout.SOUTH );
 
         // Agregar el panel de pasajeros al panel de pestañas
         tabbedPane.addTab ( "Pasajeros" ,passengerPanel );
     }
+
+
 }
