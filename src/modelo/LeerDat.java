@@ -1,3 +1,5 @@
+package modelo;
+
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
@@ -14,7 +16,7 @@ import java.io.InputStreamReader;
 
 public class LeerDat {
     public static void main(String[] args) {
-        String filePath = "C:\\Users\\lhuji\\Desktop\\ProyectoAeropuerto\\Recursos\\Trayectos.dat";
+        String filePath = "src/Trayectos.dat";
         try {
             FileInputStream fileInputStream = new FileInputStream(filePath);
             DataInputStream dataInputStream = new DataInputStream(fileInputStream);

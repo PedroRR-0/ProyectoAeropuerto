@@ -11,10 +11,10 @@ public class ConexionBD {
         try {
             // Establecer la conexión con la base de datos
             Class.forName("org.mariadb.jdbc.Driver");
-            conexion = DriverManager.getConnection("jdbc:mariadb://localhost:3306/proy3te4","root","root");
+            conexion = DriverManager.getConnection("jdbc:mariadb://localhost:3306/proy3te4","root","123456");
 
             // Crear una sentencia para ejecutar una consulta
-            sentencia = conexion.createStatement();
+            sentencia = getConexion().createStatement();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -23,7 +23,7 @@ public class ConexionBD {
     public ResultSet ejecutarConsulta(String consulta) {
         try {
             // Ejecutar la consulta y obtener el resultado
-            resultado = sentencia.executeQuery(consulta);
+            resultado = getSentencia().executeQuery(consulta);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -31,13 +31,21 @@ public class ConexionBD {
         return resultado;
     }
 
+
     public void cerrarConexion() {
         try {
             // Cerrar la conexión
-            conexion.close();
+            getConexion().close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    public Connection getConexion() {
+        return conexion;
+    }
+
+    public Statement getSentencia() {
+        return sentencia;
+    }
 }

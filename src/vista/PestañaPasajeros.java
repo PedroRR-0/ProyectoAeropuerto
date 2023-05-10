@@ -5,13 +5,16 @@ import modelo.ConexionBD;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+<<<<<<< HEAD
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+=======
+>>>>>>> main
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class PestañaPasajeros {
-    public void pestañaPasajeros (JTabbedPane tabbedPane ) {
+    public void pestañaPasajeros (JTabbedPane tabbedPane ) throws SQLException {
         // Pestaña de Pasajeros
         JPanel passengerPanel = new JPanel ( );
         passengerPanel.setLayout ( new BorderLayout ( ) );
@@ -22,11 +25,57 @@ public class PestañaPasajeros {
         tablePanel.setLayout ( new BorderLayout ( ) );
 
         // Tabla de pasajeros
+<<<<<<< HEAD
         String[] columnNames = { "idpasajeros" ,"nombre" ,"apellido1" ,"apellido2" ,"fechanacimiento" ,"telefono" ,"ecorreo" ,"direccion" ,"foto" };
         Object[][] data = obtenerDatosDeLaBaseDeDatos(); // Obtén los datos de la base de datos
         JTable tabla = new JTable(data, columnNames);
         DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
         JTable passengerTable = new JTable(tableModel);
+=======
+        String[] columnNames = { "idPasajero" , "DNI", "nombre" ,"apellido1" ,"apellido2" ,
+                "edad" ,"telefono" ,"Correo electrónico" ,"direccion" , "ID Vuelo"};
+        ConexionBD conexionBD = new ConexionBD ( );
+        // Ejecutar una consulta para obtener todos los aviones de la tabla de aviones
+        ResultSet resultado = conexionBD.ejecutarConsulta("SELECT * FROM pasajeros");
+        ResultSet resultado3 = conexionBD.ejecutarConsulta("SELECT edad(fechaNacimiento) as e FROM pasajeros;");
+        DefaultTableModel contenidoTablaPasajeros = new DefaultTableModel ( new Object[][]{}, columnNames );
+        boolean flag;
+        while (resultado.next()){
+            flag = false;
+            resultado3.next();
+            ResultSet resultado2 = conexionBD.ejecutarConsulta ( "SELECT * FROM pasajeros_vuelos where idPasajeros="+resultado.getInt("idPasajeros"));
+            while(resultado2.next()) {
+                    contenidoTablaPasajeros.addRow(new Object[]{
+                            resultado.getInt("idPasajeros"),
+                            resultado.getString("dni"),
+                            resultado.getString("nombre"),
+                            resultado.getString("apellido1"),
+                            resultado.getString("apellido2"),
+                            resultado3.getString("e"),
+                            resultado.getString("telefono"),
+                            resultado.getString("ecorreo"),
+                            resultado.getString("direccion"),
+                            resultado2.getInt("idVuelo")
+
+                });
+                flag = true;
+            }
+                if (!flag) {
+                    contenidoTablaPasajeros.addRow(new Object[]{
+                            resultado.getInt("idPasajeros"),
+                            resultado.getString("dni"),
+                            resultado.getString("nombre"),
+                            resultado.getString("apellido1"),
+                            resultado.getString("apellido2"),
+                            resultado3.getString("e"),
+                            resultado.getString("telefono"),
+                            resultado.getString("ecorreo"),
+                            resultado.getString("direccion")
+                    });
+                }
+        }
+        JTable passengerTable = new JTable (contenidoTablaPasajeros);
+>>>>>>> main
         passengerTable.setDefaultEditor(Object.class, null);
         JScrollPane passengerScrollPane = new JScrollPane(passengerTable);
         tablePanel.add(passengerScrollPane, BorderLayout.CENTER);

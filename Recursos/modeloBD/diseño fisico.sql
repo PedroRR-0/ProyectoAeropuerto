@@ -59,9 +59,10 @@ CREATE OR REPLACE TABLE pasajeros (
   apellido2 VARCHAR(45),
   fechaNacimiento DATE,
   ecorreo VARCHAR(45),
-  foto LONGBLOB,
+  foto VARCHAR(200),
   telefono CHAR(12),
   direccion VARCHAR(45),
+  dni CHAR(9) UNIQUE,
   PRIMARY KEY (idPasajeros)
 );
 
@@ -131,6 +132,24 @@ CREATE OR REPLACE TABLE miembros_vuelos (
     ON UPDATE CASCADE
 	 );
 
+
+DELIMITER $$
+
+create function edad (fecha date)
+
+returns int unsigned
+
+begin
+
+	DECLARE num INT UNSIGNED;
+
+	set num=(TIMESTAMPDIFF( year, fecha, curdate() ));
+
+return num;
+
+end
+
+$$
 
 INSERT INTO miembros (idTripulacion, ecorreo, nombre, apellido1, apellido2, direccion, categoria, fechaNacimiento, telefono) VALUES
     (1, 'juan.perez@mail.com', 'Juan', 'Perez', 'Gonzalez', 'Calle Mayor 1', 'azafato', '1990-01-01', '123456789'),
