@@ -90,7 +90,7 @@ public class CargaDeDatos {
                 String word1 = new String(dataInputStream.readUTF().getBytes("ISO-8859-1"), "UTF-8");
                 String word2 = new String(dataInputStream.readUTF().getBytes("ISO-8859-1"), "UTF-8");
                 // Insertar datos en tabla trayectos
-                PreparedStatement stmt = con.prepareStatement("INSERT INTO trayectos (idTrayecto, origen, destino) VALUES (?, ?, ?)");
+                PreparedStatement stmt = con.prepareStatement("INSERT INTO trayectos (idTrayecto, origen, destino) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE idTrayecto = idTrayecto");
                 stmt.setInt(1, number);
                 stmt.setString(2, word1);
                 stmt.setString(3, word2);
