@@ -41,7 +41,7 @@ public class PestaniaVuelos extends JPanel {
             String fecha = dateFormat.format(resultado.getDate("fecha"));
             String horaSalida = timeFormat.format(resultado.getTime("horaSalida"));
             String horaLlegada = timeFormat.format(resultado.getTime("horaLlegada"));
-            contenidoTablaVuelos.addRow(new Object[]{resultado.getInt("idVuelo"), resultado.getInt("idAvion"), resultado2.getString("destino"), resultado2.getString("origen"), fecha, horaSalida, horaLlegada});
+            contenidoTablaVuelos.addRow(new Object[]{resultado.getInt("idVuelo"), resultado.getInt("idAvion"), resultado2.getString("origen"), resultado2.getString("destino"), fecha, horaSalida, horaLlegada});
         }
 
         JTable flightsTable = new JTable ( contenidoTablaVuelos );
@@ -143,7 +143,7 @@ public class PestaniaVuelos extends JPanel {
             String fecha = dateFormat.format(resultado.getDate("fecha"));
             String horaSalida = timeFormat.format(resultado.getTime("horaSalida"));
             String horaLlegada = timeFormat.format(resultado.getTime("horaLlegada"));
-            modeloTabla.addRow(new Object[]{resultado.getInt("idVuelo"), resultado.getInt("idAvion"), resultado2.getString("destino"), resultado2.getString("origen"), fecha, horaSalida, horaLlegada});
+            modeloTabla.addRow(new Object[]{resultado.getInt("idVuelo"), resultado.getInt("idAvion"), resultado2.getString("origen"), resultado2.getString("destino"), fecha, horaSalida, horaLlegada});
         }
         // Cerrar la conexión a la base de datos
         conexionBD.cerrarConexion();

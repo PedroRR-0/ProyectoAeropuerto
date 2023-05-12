@@ -2,7 +2,7 @@ package vista;
 
 import controlador.Logomens;
 import modelo.ConexionBD;
-
+import com.toedter.calendar.JDateChooser;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 
 public class editarVuelo extends JFrame {
 
@@ -63,9 +64,9 @@ public class editarVuelo extends JFrame {
         JTextField destinoTexfield = new JTextField();
         datosVuelo.add(destinoTexfield);
         JLabel fechaLabel = new JLabel("FECHA: ");
+        JDateChooser fechaChooser = new JDateChooser();
         datosVuelo.add(fechaLabel);
-        JTextField fechaTexfield = new JTextField();
-        datosVuelo.add(fechaTexfield);
+        datosVuelo.add(fechaChooser);
         JLabel horaSalidaLabel = new JLabel("HORA DE SALIDA: ");
         datosVuelo.add(horaSalidaLabel);
         JTextField horaSalidaTexfield = new JTextField();
@@ -83,13 +84,18 @@ public class editarVuelo extends JFrame {
             PreparedStatement stmt = con.getConexion().prepareStatement(query2);
             stmt.setInt(1, Integer.parseInt(selec));
             ResultSet result = stmt.executeQuery();
+
             if (result.next()) {
+                // Obtener la fecha del resultado de la consulta SQL
+                java.sql.Date fechaSQL = result.getDate("fecha");
+                // Crear un objeto java.util.Date a partir de la fecha obtenida
+                java.util.Date fechaUtil = new java.util.Date(fechaSQL.getTime());
+                fechaChooser.setDate (fechaUtil);
                 // Establecer los valores correspondientes en los componentes de la interfaz de usuario
                 idVuelosCombo.setSelectedItem(String.valueOf(result.getInt("idVuelo")));
                 idAvionesCombo.setSelectedItem(String.valueOf(result.getInt("idAvion")));
                 origenTexfield.setText(result.getString("origen"));
                 destinoTexfield.setText(result.getString("destino"));
-                fechaTexfield.setText(result.getString("fecha"));
                 horaSalidaTexfield.setText(result.getString("horaSalida"));
                 horaLlegadaTexfield.setText(result.getString("horaLlegada"));
             }
@@ -99,6 +105,14 @@ public class editarVuelo extends JFrame {
         aceptar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // Obtener la fecha seleccionada del JDateChooser
+                java.util.Date fechaSeleccionada = fechaChooser.getDate();
+                // Convertir la fecha al formato deseado
+                java.sql.Date fechaSQL = new java.sql.Date(fechaSeleccionada.getTime());
+                // Convertir la fecha a una cadena en el formato deseado (por ejemplo, "yyyy-MM-dd")
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                String fecha = sdf.format(fechaSeleccionada);
+
                 ResultSet resTrayectos = con.ejecutarConsulta("SELECT idTrayecto from trayectos where origen like" + "'" +
                         origenTexfield.getText() + "'" + " and destino like " + "'" + destinoTexfield.getText() + "'");
                 int idTray;
@@ -133,7 +147,7 @@ public class editarVuelo extends JFrame {
                                 WHERE idVuelo = ?
                                 ;
                                     """);
-                    p.setString(1,fechaTexfield.getText());
+                    p.setString(1,fecha);
                     p.setString(2,horaSalidaTexfield.getText());
                     p.setString(3, horaLlegadaTexfield.getText());
                     p.setInt(4, Integer.parseInt((String) idAvionesCombo.getSelectedItem()));
@@ -159,14 +173,16 @@ public class editarVuelo extends JFrame {
                 }
                 Logomens log = new Logomens();
                 log.escribirRegistro("Vuelo editado correctamente.");
+                dispose();
             }
+
         });
         limpiar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 origenTexfield.setText("");
                 destinoTexfield.setText("");
-                fechaTexfield.setText("");
+                fechaChooser.setDate(null);
                 horaSalidaTexfield.setText("");
                 horaLlegadaTexfield.setText("");
             }
