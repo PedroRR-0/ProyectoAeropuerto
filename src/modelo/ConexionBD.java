@@ -11,7 +11,7 @@ public class ConexionBD {
         try {
             // Establecer la conexión con la base de datos
             Class.forName("org.mariadb.jdbc.Driver");
-            conexion = DriverManager.getConnection("jdbc:mariadb://localhost:3306/proy3te4","root","root");
+            conexion = DriverManager.getConnection("jdbc:mariadb://localhost:3306/proy3te4","root","123456");
 
             // Crear una sentencia para ejecutar una consulta
             sentencia = getConexion().createStatement();
