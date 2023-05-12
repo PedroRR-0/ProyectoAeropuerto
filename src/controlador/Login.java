@@ -30,7 +30,7 @@ public class Login {
         }
         Connection con;
         try {
-            con = DriverManager.getConnection("jdbc:mariadb://localhost:3306/proy3te4","root","123456");
+            con = DriverManager.getConnection("jdbc:mariadb://localhost:3306/proy3te4","root","root");
             return con;
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -106,9 +106,13 @@ public class Login {
     }
     public void entradaCorrecta(){
         JOptionPane.showMessageDialog(null, "Bienvenido!");
+        Logomens log = new Logomens ();
+        log.escribirRegistro("Conexión correcta al Login");
     }
     public void entradaIncorrecta(){
         JOptionPane.showMessageDialog(null, "Usuario o contraseña incorrectos. Por favor, inténtelo de nuevo.");
+        Logomens log = new Logomens ();
+        log.escribirRegistro("Conexión incorrecta al Login");
     }
     public void cerrarConexion() {
         try {

@@ -1,7 +1,8 @@
 package vista;
 
+import controlador.Logomens;
 import modelo.ConexionBD;
-
+import java.text.SimpleDateFormat;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -16,6 +17,10 @@ public class PestaniaVuelos extends JPanel {
         obtenerVuelos ();
     }
     public void obtenerVuelos() throws SQLException {
+        // Formato de fecha y hora
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+
         this.setLayout ( new BorderLayout ( ) );
 
         // Panel superior con la tabla de vuelos
@@ -30,13 +35,15 @@ public class PestaniaVuelos extends JPanel {
         // Ejecutar una consulta para obtener todos los aviones de la tabla de aviones
         ResultSet resultado = conexionBD.ejecutarConsulta ( "SELECT * FROM vuelos" );
         DefaultTableModel contenidoTablaVuelos = new DefaultTableModel ( new Object[][]{} ,NombreCOlumnas );
-        while ( resultado.next ( ) ) {
-
-            ResultSet resultado2 = conexionBD.ejecutarConsulta ( "SELECT * FROM trayectos where idTrayecto="+resultado.getInt ( "idTrayecto" ) );
-            resultado2.next ( );
-            contenidoTablaVuelos.addRow ( new Object[]{ resultado.getInt ( "idVuelo" ) ,resultado.getInt ( "idAvion" ) ,resultado2.getString ( "destino" ) ,resultado2.getString ( "origen" ) ,resultado.getString ( "fecha" ) ,resultado.getString ( "horaSalida" ) ,resultado.getString ( "horaLlegada" ) } );
-
+        while (resultado.next()) {
+            ResultSet resultado2 = conexionBD.ejecutarConsulta("SELECT * FROM trayectos where idTrayecto="+resultado.getInt("idTrayecto"));
+            resultado2.next();
+            String fecha = dateFormat.format(resultado.getDate("fecha"));
+            String horaSalida = timeFormat.format(resultado.getTime("horaSalida"));
+            String horaLlegada = timeFormat.format(resultado.getTime("horaLlegada"));
+            contenidoTablaVuelos.addRow(new Object[]{resultado.getInt("idVuelo"), resultado.getInt("idAvion"), resultado2.getString("destino"), resultado2.getString("origen"), fecha, horaSalida, horaLlegada});
         }
+
         JTable flightsTable = new JTable ( contenidoTablaVuelos );
         JScrollPane flightsScrollPane = new JScrollPane ( flightsTable );
         tablaVuelos.add ( flightsScrollPane ,BorderLayout.CENTER );
@@ -97,6 +104,8 @@ public class PestaniaVuelos extends JPanel {
                     ConexionBD conexionBD1 = new ConexionBD ();
                     conexionBD1.ejecutarConsulta("DELETE from vuelos where idVuelo = "+selec);
                     JOptionPane.showMessageDialog(null, "Vuelo borrado con éxito");
+                    Logomens log = new Logomens ();
+                    log.escribirRegistro("Vuelo eliminado correctamente.");
                     try {
                         conexionBD.cerrarConexion();
                         actualizarTabla(flightsTable);

@@ -1,5 +1,6 @@
 package vista;
 
+
 import javax.swing.*;
 import java.sql.SQLException;
 

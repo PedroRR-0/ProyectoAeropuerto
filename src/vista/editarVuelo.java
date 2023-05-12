@@ -1,5 +1,6 @@
 package vista;
 
+import controlador.Logomens;
 import modelo.ConexionBD;
 
 import javax.swing.*;
@@ -138,6 +139,8 @@ public class editarVuelo extends JFrame {
                 catch (SQLException ex) {
                     throw new RuntimeException ( ex );
                 }
+                Logomens log = new Logomens ();
+                log.escribirRegistro("Vuelo editado correctamente.");
             }
         });
         limpiar.addActionListener(new ActionListener() {

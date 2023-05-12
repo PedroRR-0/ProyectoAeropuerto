@@ -1,0 +1,21 @@
+Usuarios cargados desde el archivo XML
+Aviones cargados desde el archivo JSON
+Trayectos cargados desde el archivo DAT
+Conexión correcta al Login
+Miembro eliminado correctamente.
+Tripulante editado correctamente.
+Tripulante editado correctamente.
+Usuarios cargados desde el archivo XML
+Aviones cargados desde el archivo JSON
+Trayectos cargados desde el archivo DAT
+Conexión correcta al Login
+Usuarios cargados desde el archivo XML
+Aviones cargados desde el archivo JSON
+Trayectos cargados desde el archivo DAT
+Usuarios cargados desde el archivo XML
+Aviones cargados desde el archivo JSON
+Trayectos cargados desde el archivo DAT
+Usuarios cargados desde el archivo XML
+Aviones cargados desde el archivo JSON
+Trayectos cargados desde el archivo DAT
+Conexión correcta al Login

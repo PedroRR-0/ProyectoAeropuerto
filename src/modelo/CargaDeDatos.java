@@ -3,6 +3,7 @@ package modelo;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import controlador.Logomens;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -41,10 +42,12 @@ public class CargaDeDatos {
                     stmt.executeUpdate();
                 }
             }
-            System.out.println("Usuarios cargados desde el archivo XML");
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+        Logomens log = new Logomens ();
+        log.escribirRegistro("Usuarios cargados desde el archivo XML");
     }
 
     public void cargaAvionesDesdeJson(Connection con) {
@@ -71,10 +74,11 @@ public class CargaDeDatos {
                 stmt.executeUpdate();
             }
 
-            System.out.println("Aviones cargados desde el archivo JSON");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+        Logomens log = new Logomens ();
+        log.escribirRegistro("Aviones cargados desde el archivo JSON");
     }
 
     // Carga de los trayectos desde fichero .dat
@@ -97,13 +101,15 @@ public class CargaDeDatos {
                 stmt.executeUpdate();
             }
 
-            System.out.println("Trayectos cargados desde el archivo DAT");
+
             dataInputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        Logomens log = new Logomens ();
+        log.escribirRegistro("Trayectos cargados desde el archivo DAT");
     }
 
 }
