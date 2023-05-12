@@ -33,7 +33,7 @@ public class PestañaPasajeros {
         ConexionBD conexionBD = new ConexionBD ( );
         // Ejecutar una consulta para obtener todos los aviones de la tabla de aviones
         ResultSet resultado = conexionBD.ejecutarConsulta("SELECT * FROM pasajeros");
-        ResultSet resultado3 = conexionBD.ejecutarConsulta("SELECT edad(fechaNacimiento) as e FROM pasajeros;");
+        ResultSet resultado3 = conexionBD.ejecutarConsulta("SELECT edad(fechaNacimiento) as edad FROM pasajeros;");
         DefaultTableModel contenidoTablaPasajeros = new DefaultTableModel ( new Object[][]{}, columnNames );
         boolean flag;
         while (resultado.next()){
@@ -47,7 +47,7 @@ public class PestañaPasajeros {
                             resultado.getString("nombre"),
                             resultado.getString("apellido1"),
                             resultado.getString("apellido2"),
-                            resultado3.getString("e"),
+                            resultado3.getString("edad"),
                             resultado.getString("telefono"),
                             resultado.getString("ecorreo"),
                             resultado.getString("direccion"),
@@ -63,7 +63,7 @@ public class PestañaPasajeros {
                             resultado.getString("nombre"),
                             resultado.getString("apellido1"),
                             resultado.getString("apellido2"),
-                            resultado3.getString("e"),
+                            resultado3.getString("edad"),
                             resultado.getString("telefono"),
                             resultado.getString("ecorreo"),
                             resultado.getString("direccion")

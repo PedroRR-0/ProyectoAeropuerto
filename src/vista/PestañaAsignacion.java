@@ -121,9 +121,9 @@ public class PestañaAsignacion {
                 if (e.getValueIsAdjusting()){
                     Miembro2 selec = miembrosList.getSelectedValue();
                     if (selec!=null){
-                        if (miembrosModel.getSize()<5) {
+
                             tripSelec.setText(selec + "; " + tripSelec.getText());
-                        }
+
                     }
                 }
             }
