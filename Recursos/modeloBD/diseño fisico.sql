@@ -43,6 +43,7 @@ CREATE OR REPLACE TABLE miembros (
   -- Hemos añadido una categoría al tipo enum para considerar mecánicos o ingenieros de vuelo
   fechaNacimiento DATE,
   telefono CHAR(12) UNIQUE,
+foto LONGBLOB,
   PRIMARY KEY (idTripulacion)
   );
 

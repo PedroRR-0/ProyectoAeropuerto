@@ -1,5 +1,7 @@
 package modelo;
 
+import javax.swing.*;
+import java.awt.*;
 import java.sql.*;
 
 public class ConexionBD {
@@ -31,7 +33,27 @@ public class ConexionBD {
         return resultado;
     }
 
+    public ImageIcon obtenerImagen(int telefono) throws SQLException {
+        // Realiza la consulta para obtener la imagen por el ID
+        ResultSet resultado = ejecutarConsulta("SELECT foto FROM miembros WHERE telefono = " + telefono);
 
+        // Si hay un resultado, obtén la imagen como un byte array
+        if (resultado.next()) {
+            byte[] imagenBytes = resultado.getBytes("foto");
+
+            // Convierte el byte array en un ImageIcon
+            ImageIcon imagenIcono = new ImageIcon(imagenBytes);
+
+            // Escala la imagen al tamaño deseado si es necesario
+            Image imagen = imagenIcono.getImage().getScaledInstance(150, 150, Image.SCALE_DEFAULT);
+
+            // Crea un nuevo ImageIcon escalado y lo devuelve
+            return new ImageIcon(imagen);
+        }
+
+        // Si no hay resultado, devuelve null
+        return null;
+    }
     public void cerrarConexion() {
         try {
             // Cerrar la conexión
