@@ -31,6 +31,7 @@ class Pestanias extends JFrame {
 
         // Llamada para la creación de la pestaña tripulantes
         PestañaTripulantes pestañaTripulantes = new PestañaTripulantes();
+        crewPanel = new JPanel();
         pestañaTripulantes.pestañaTripulantes(crewPanel,tabbedPane);
 
         // Llamada para la creación de la pestaña pasajeros
