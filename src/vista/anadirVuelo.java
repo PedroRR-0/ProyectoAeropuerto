@@ -39,11 +39,11 @@ public class anadirVuelo extends JFrame {
 
         }
         datosVuelo.add(idAvionesCombo);
-        JLabel origenLabel = new JLabel("DESTINO: ");
+        JLabel origenLabel = new JLabel("ORIGEN: ");
         datosVuelo.add(origenLabel);
         JTextField origenTexfield = new JTextField();
         datosVuelo.add(origenTexfield);
-        JLabel destinoLabel = new JLabel("ORIGEN: ");
+        JLabel destinoLabel = new JLabel("DESTINO: ");
         datosVuelo.add(destinoLabel);
         JTextField destinoTexfield = new JTextField();
         datosVuelo.add(destinoTexfield);
@@ -135,6 +135,7 @@ public class anadirVuelo extends JFrame {
         this.add(datosVuelo,BorderLayout.CENTER);
         this.pack();
         this.setVisible(true);
+        this.setLocationRelativeTo(null);
 
     }
 }

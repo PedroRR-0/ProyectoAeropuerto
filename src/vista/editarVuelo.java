@@ -77,6 +77,25 @@ public class editarVuelo extends JFrame {
         JButton aceptar = new JButton("ACEPTAR");
         JButton limpiar = new JButton("LIMPIAR CAMPOS");
         JPanel botones = new JPanel();
+        // Obtener los datos del vuelo seleccionado de la base de datos
+        String query2 = "SELECT * FROM vuelos join trayectos on vuelos.idTrayecto=trayectos.idTrayecto WHERE idVuelo = ?";
+        try {
+            PreparedStatement stmt = con.getConexion().prepareStatement(query2);
+            stmt.setInt(1, Integer.parseInt(selec));
+            ResultSet result = stmt.executeQuery();
+            if (result.next()) {
+                // Establecer los valores correspondientes en los componentes de la interfaz de usuario
+                idVuelosCombo.setSelectedItem(String.valueOf(result.getInt("idVuelo")));
+                idAvionesCombo.setSelectedItem(String.valueOf(result.getInt("idAvion")));
+                origenTexfield.setText(result.getString("origen"));
+                destinoTexfield.setText(result.getString("destino"));
+                fechaTexfield.setText(result.getString("fecha"));
+                horaSalidaTexfield.setText(result.getString("horaSalida"));
+                horaLlegadaTexfield.setText(result.getString("horaLlegada"));
+            }
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
         aceptar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -103,16 +122,15 @@ public class editarVuelo extends JFrame {
                     }
                 }
                 try {
-
                     PreparedStatement p = con.getConexion().prepareStatement("""
                                 UPDATE vuelos
-                                set fecha = ?,
+                                SET fecha = ?,
                                 horaSalida = ?,
                                 horaLlegada = ?,
                                 idAvion = ?,
                                 idVuelo = ?,
                                 idTrayecto = ?
-                                where idVuelo = ?
+                                WHERE idVuelo = ?
                                 ;
                                     """);
                     p.setString(1,fechaTexfield.getText());
@@ -128,18 +146,18 @@ public class editarVuelo extends JFrame {
                 }
                 PestaniaVuelos p = null;
                 try {
-                    p = new PestaniaVuelos ();
+                    p = new PestaniaVuelos();
                 }
                 catch (SQLException ex) {
-                    throw new RuntimeException ( ex );
+                    throw new RuntimeException(ex);
                 }
                 try {
-                    p.actualizarTabla ( flightsTable );
+                    p.actualizarTabla(flightsTable);
                 }
                 catch (SQLException ex) {
-                    throw new RuntimeException ( ex );
+                    throw new RuntimeException(ex);
                 }
-                Logomens log = new Logomens ();
+                Logomens log = new Logomens();
                 log.escribirRegistro("Vuelo editado correctamente.");
             }
         });
@@ -159,6 +177,6 @@ public class editarVuelo extends JFrame {
         this.add(datosVuelo,BorderLayout.CENTER);
         this.pack();
         this.setVisible(true);
-
+        this.setLocationRelativeTo(null);
     }
 }

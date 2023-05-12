@@ -134,11 +134,16 @@ public class PestaniaVuelos extends JPanel {
         DefaultTableModel modeloTabla = (DefaultTableModel) flightsTable.getModel();
         // Limpiar el modelo de la tabla
         modeloTabla.setRowCount(0);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
         // Agregar los vuelos al modelo de la tabla
         while (resultado.next()) {
             ResultSet resultado2 = conexionBD.ejecutarConsulta("SELECT * FROM trayectos where idTrayecto="+resultado.getInt("idTrayecto"));
             resultado2.next();
-            modeloTabla.addRow(new Object[]{ resultado.getInt("idVuelo"), resultado.getInt("idAvion"), resultado2.getString("destino"), resultado2.getString("origen"), resultado.getString("fecha"), resultado.getString("horaSalida"), resultado.getString("horaLlegada")});
+            String fecha = dateFormat.format(resultado.getDate("fecha"));
+            String horaSalida = timeFormat.format(resultado.getTime("horaSalida"));
+            String horaLlegada = timeFormat.format(resultado.getTime("horaLlegada"));
+            modeloTabla.addRow(new Object[]{resultado.getInt("idVuelo"), resultado.getInt("idAvion"), resultado2.getString("destino"), resultado2.getString("origen"), fecha, horaSalida, horaLlegada});
         }
         // Cerrar la conexión a la base de datos
         conexionBD.cerrarConexion();
