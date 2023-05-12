@@ -1,17 +1,19 @@
 package modelo;
 
 public class Vuelo {
+    private int id;
 
     private String destino;
     private String origen;
     private String fecha;
     private String hora;
 
-    public Vuelo(String destino, String origen, String fecha, String hora){
+    public Vuelo(int id, String destino, String origen, String fecha, String hora){
         this.setDestino(destino);
         this.setOrigen(origen);
         this.setFecha(fecha);
         this.setHora(hora);
+        this.id = id;
     }
 
     public String toString() {
@@ -48,6 +50,14 @@ public class Vuelo {
 
     public void setHora(String hora) {
         this.hora = hora;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }
 

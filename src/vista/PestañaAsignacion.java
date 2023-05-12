@@ -11,10 +11,18 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
 
 public class PestañaAsignacion {
+    String idAvion;
+    int idVuelo;
     PestañaAsignacion(JTabbedPane tabbedPane) throws SQLException {
         // Pestaña de Asignación
         JPanel assignmentsPanel = new JPanel();
@@ -37,10 +45,9 @@ public class PestañaAsignacion {
 
             avionBox.addItem(result.getString("matricula"));
         }
-        avionBox.addActionListener(new ActionListener() {
+        ActionListener listenerAvion = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String idAvion;
                 String selec = (String) avionBox.getSelectedItem();
                 String query = "SELECT idAvion, modelo from aviones where matricula like "+"'"+selec+"'";
                 ResultSet result = con.ejecutarConsulta(query);
@@ -49,7 +56,7 @@ public class PestañaAsignacion {
                     modeloLabel.setText(result.getString("modelo"));
                     idAvion = result.getString("idAvion");
                     String consultaTrayecto = """
-                            SELECT v.fecha, v.horaSalida, destino, origen
+                            SELECT v.idVuelo, v.fecha, v.horaSalida, destino, origen
                             FROM trayectos t
                             JOIN vuelos v
                             ON v.idTrayecto = t.idTrayecto
@@ -59,7 +66,7 @@ public class PestañaAsignacion {
                     result = con.ejecutarConsulta(consultaTrayecto);
                     trayectoCombo.removeAllItems();
                     while(result.next()){
-                        Vuelo v = new Vuelo(result.getString("destino"),result.getString("origen"),
+                        Vuelo v = new Vuelo(result.getInt("idVuelo"),result.getString("destino"),result.getString("origen"),
                                 result.getString("fecha"),result.getString("horaSalida"));
                         trayectoCombo.addItem(v);
                     }
@@ -68,9 +75,13 @@ public class PestañaAsignacion {
                     throw new RuntimeException(ex);
                 }
             }
-        });
+            };
+        avionBox.addActionListener(listenerAvion);
+        avionBox.setSelectedItem(avionBox.getItemAt(0));
+        listenerAvion.actionPerformed(new ActionEvent(avionBox, ActionEvent.ACTION_PERFORMED, ""));
         JLabel horaVuelo = new JLabel();
         JLabel fechaVuelo = new JLabel();
+        JTextArea pasajeros = new JTextArea();
         trayectoCombo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -78,15 +89,38 @@ public class PestañaAsignacion {
                 if (selec == null){
                     fechaVuelo.setText("");
                     horaVuelo.setText("");
+                    idVuelo = -1;
                 } else {
                     fechaVuelo.setText(selec.getFecha());
                     horaVuelo.setText(selec.getHora());
+                    PreparedStatement p = null;
+                    try {
+                        p = con.getConexion().prepareStatement("""
+                            select nombre, apellido1, apellido2
+                            from pasajeros p
+                            join pasajeros_vuelos pv
+                            on p.idPasajeros = pv.idPasajeros
+                            where idVuelo = ? and idAvion = ?;
+                            """);
+                        idVuelo = selec.getId();
+                        p.setInt(1,idVuelo);
+                        p.setInt(2, Integer.parseInt(idAvion));
+                        ResultSet res = p.executeQuery();
+                        pasajeros.setText("");
+                        while (res.next()){
+                            pasajeros.setText(res.getString("apellido1")+" "+res.getString("apellido2")+
+                                    ", "+res.getString("nombre")+pasajeros.getText());
+                        }
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    }
+
                 }
             }
         });
 
         JLabel vueloLabel = new JLabel("VUELO: ");
-        JLabel tripuLabel = new JLabel("EL TRIPÓN: ");
+        JLabel tripuLabel = new JLabel("TRIPULACIÓN: ");
         centerLeft.add(logistica);
         centerLeft.add(avionLabel);
         centerLeft.add(avionBox);
@@ -115,23 +149,87 @@ public class PestañaAsignacion {
             miembrosModel.addElement(miembro);
         }
         JTextArea tripSelec = new JTextArea();
+        ArrayList<Miembro2> miembrosSelec = new ArrayList<>();
         miembrosList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 if (e.getValueIsAdjusting()){
                     Miembro2 selec = miembrosList.getSelectedValue();
-                    if (selec!=null){
-
+                    if (selec!=null && miembrosSelec.size()<5){
+                            miembrosSelec.add(selec);
                             tripSelec.setText(selec + "; " + tripSelec.getText());
 
+                    } else {
+                        UIManager.put("OptionPane.yesButtonText", "Sí");
+                        int opt = JOptionPane.showConfirmDialog(null, "Solo puede añadir 5 tripulantes. ¿Desea empezar de nuevo?", "Información",JOptionPane.YES_NO_OPTION);
+                        if (opt == JOptionPane.YES_NO_OPTION){
+                            miembrosSelec.clear();
+                            tripSelec.setText("");
+                        }
                     }
                 }
             }
         });
         centerLeft.add(scrollPane);
         centerLeft.add(tripSelec);
+        centerRight.add(pasajeros);
         center.add(centerLeft);
         center.add(centerRight);
+        JPanel sur = new JPanel();
+        JButton listo = new JButton("¡Listo!");
+        listo.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                PreparedStatement p = null;
+                try {
+                    p = con.getConexion().prepareStatement("""
+                            select idVuelo, idAvion
+                            from miembros_vuelos pv
+                            where idVuelo = ? and idAvion = ?;
+                            """);
+                    p.setInt(1, idVuelo);
+                    p.setInt(2, Integer.parseInt(idAvion));
+                    ResultSet res = p.executeQuery();
+                    if (miembrosSelec.isEmpty() || idVuelo == -1)
+                    {
+                        JOptionPane.showMessageDialog(assignmentsPanel,"Seleccione un vuelo y al menos un tripulante");
+                    } else {
+                        if (!res.next()) {
+                            Iterator<Miembro2> it = miembrosSelec.iterator();
+                            while (it.hasNext()) {
+                                Miembro2 m = it.next();
+                                p = con.getConexion().prepareStatement("""
+                            insert into miembros_vuelos
+                            values(?,?,?,?)
+                            """);
+                            LocalDate fechaActual = LocalDate.now();
+                            DateTimeFormatter formateador = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                            String fechaComoString = fechaActual.format(formateador);
+                            p.setInt(1, idVuelo);
+                            p.setInt(2, Integer.parseInt(idAvion));
+                            p.setInt(3, m.getId());
+                            p.setString(4, fechaComoString);
+                            int res1 = p.executeUpdate();
+                            JOptionPane.showMessageDialog(assignmentsPanel,"Tripulantes añadidos con éxito");
+                        }
+                    } else {
+                        UIManager.put("OptionPane.yesButtonText", "Sí");
+                        int opt = JOptionPane.showConfirmDialog(assignmentsPanel, "Lo sentimos, ya se asignó ese vuelo. ¿Desea empezar de nuevo?", "Información", JOptionPane.YES_NO_OPTION);
+                        if (opt == JOptionPane.YES_NO_OPTION) {
+                            miembrosSelec.clear();
+                            tripSelec.setText("");
+                            avionBox.setSelectedItem(avionBox.getItemAt(0));
+
+                        }
+                    }
+                    }
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+        sur.add(listo);
+        assignmentsPanel.add(sur, BorderLayout.SOUTH);
         assignmentsPanel.add(center,BorderLayout.CENTER);
         tabbedPane.addTab ( "Asignación" , assignmentsPanel);
 
