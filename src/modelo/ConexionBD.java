@@ -45,7 +45,7 @@ public class ConexionBD {
             ImageIcon imagenIcono = new ImageIcon(imagenBytes);
 
             // Escala la imagen al tamaño deseado si es necesario
-            Image imagen = imagenIcono.getImage().getScaledInstance(250, 250, Image.SCALE_DEFAULT);
+            Image imagen = imagenIcono.getImage().getScaledInstance(150, 150, Image.SCALE_DEFAULT);
 
             // Crea un nuevo ImageIcon escalado y lo devuelve
             return new ImageIcon(imagen);

@@ -3,6 +3,7 @@ package vista;
 import modelo.ConexionBD;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
@@ -84,6 +85,8 @@ public class PestañaTripulantes{
 // Crear un JPanel para contener los detalles del tripulante
         JPanel infoPanel = new JPanel(new GridBagLayout());
         infoPanel.setBackground(Color.white);
+        photolabel.setHorizontalAlignment(JLabel.CENTER); // Centrar la imagen horizontalmente
+        photolabel.setVerticalAlignment(JLabel.CENTER); // Centrar la imagen verticalmente
 
 // Agregar los JLabels con la información del tripulante al panel de detalles
 
@@ -163,7 +166,8 @@ public class PestañaTripulantes{
         // Agregar el panel con CardLayout a la pestaña de tripulantes
         JPanel crewTab=new JPanel(new BorderLayout());
         crewTab.add(cardPanel,BorderLayout.CENTER);
-
+        // Crear el JLabel para la foto del miembro
+        JLabel photoLabel = new JLabel();
         // Agregar un ActionListener al botón "Ver detalles"
         miembrosList.addListSelectionListener(new ListSelectionListener(){
             public void valueChanged( ListSelectionEvent e ){
@@ -190,8 +194,14 @@ public class PestañaTripulantes{
                                 try {
                                     int telefono = miembro.getInt ( "telefono" );
                                     ImageIcon imagen = conexionBD3.obtenerImagen ( telefono );
-                                    photolabel.setSize ( 50 ,50 );
+                                    photolabel.setSize ( 150 ,150 );
                                     photolabel.setIcon ( imagen );
+                                    photolabel.setHorizontalAlignment(JLabel.CENTER); // Centrar la imagen horizontalmente
+                                    photolabel.setVerticalAlignment(JLabel.CENTER); // Centrar la imagen verticalmente
+                                    photoLabel.setSize ( 150,150 );
+                                    photoLabel.setIcon(imagen);
+                                    photoLabel.setHorizontalAlignment(JLabel.CENTER); // Centrar la imagen horizontalmente
+                                    photoLabel.setVerticalAlignment(JLabel.CENTER); // Centrar la imagen verticalmente
                                 }
                                 catch (NullPointerException ex) {
                                     photolabel.setIcon ( null );
@@ -285,20 +295,23 @@ public class PestañaTripulantes{
 
         // Agregar el JPanel de botones al JPanel contenedor
         buttonsAndSpacePanel.add(buttonsPanel, BorderLayout.NORTH);
+        photoLabel.setHorizontalAlignment(JLabel.CENTER); // Centrar la imagen horizontalmente
+        photoLabel.setVerticalAlignment(JLabel.CENTER); // Centrar la imagen verticalmente
 
-        // Crear un espacio vertical vacío
-        JPanel spacePanel = new JPanel();
-        spacePanel.setPreferredSize(new Dimension(100, 250)); // Tamaño preferido del espacio
 
         // Agregar el espacio al JPanel contenedor
-        buttonsAndSpacePanel.add(spacePanel, BorderLayout.CENTER);
+        buttonsAndSpacePanel.add(photoLabel, BorderLayout.CENTER);
 
         // Agregar el JPanel contenedor al panel de la pestaña Tripulantes
         crewPanel.add(buttonsAndSpacePanel, BorderLayout.SOUTH);
 
 
+
+
         // Agregar la pestaña de tripulantes al JTabbedPane
         tabbedPane.addTab("Tripulantes",crewTab);
+
+
 
     }
 }
