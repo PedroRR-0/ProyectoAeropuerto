@@ -1,4 +1,5 @@
 package vista;
+import controlador.Logomens;
 import modelo.ConexionBD;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -22,6 +23,8 @@ public class EliminarTripulante {
 
                 // Mostrar un mensaje de confirmación
                 JOptionPane.showMessageDialog(null, "El miembro ha sido eliminado correctamente.");
+                Logomens log = new Logomens ();
+                log.escribirRegistro("Miembro eliminado correctamente.");
             }
         } else {
             JOptionPane.showMessageDialog(null, "Debe seleccionar un miembro para eliminar.");

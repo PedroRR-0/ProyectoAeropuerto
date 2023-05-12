@@ -23,8 +23,8 @@ CREATE OR REPLACE TABLE aviones (
 -- -----------------------------------------------------
 CREATE OR REPLACE TABLE trayectos (
   idTrayecto INT AUTO_INCREMENT,
-  destino VARCHAR(45),
   origen VARCHAR(45),
+  destino VARCHAR(45),
   PRIMARY KEY (idTrayecto)
   );
 

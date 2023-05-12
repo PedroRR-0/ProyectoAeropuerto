@@ -1,5 +1,6 @@
 package vista;
 
+import controlador.Logomens;
 import modelo.ConexionBD;
 import com.toedter.calendar.JCalendar;
 import javax.swing.*;
@@ -98,6 +99,8 @@ public class AñadirTripulante {
                 }
                 String miembro = telefonoDB + " " + nombreDB + " " + apellido1DB + " " + apellido2DB + " (" + categoriaDB + ")";
                 miembrosModel.addElement(miembro);
+                Logomens log = new Logomens ();
+                log.escribirRegistro("Tripulante añadido correctamente.");
             }
             conexionBD2.cerrarConexion();
         }

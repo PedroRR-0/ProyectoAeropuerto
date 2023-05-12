@@ -1,7 +1,12 @@
 package vista;
 
+import controlador.Logomens;
 import modelo.ConexionBD;
 
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import com.toedter.calendar.JCalendar;
+import com.toedter.calendar.JDateChooser;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -38,18 +43,20 @@ public class anadirVuelo extends JFrame {
 
         }
         datosVuelo.add(idAvionesCombo);
-        JLabel origenLabel = new JLabel("DESTINO: ");
+        JLabel origenLabel = new JLabel("ORIGEN: ");
         datosVuelo.add(origenLabel);
         JTextField origenTexfield = new JTextField();
         datosVuelo.add(origenTexfield);
-        JLabel destinoLabel = new JLabel("ORIGEN: ");
+        JLabel destinoLabel = new JLabel("DESTINO: ");
         datosVuelo.add(destinoLabel);
         JTextField destinoTexfield = new JTextField();
         datosVuelo.add(destinoTexfield);
         JLabel fechaLabel = new JLabel("FECHA: ");
         datosVuelo.add(fechaLabel);
-        JTextField fechaTexfield = new JTextField();
-        datosVuelo.add(fechaTexfield);
+        JDateChooser fechaChooser = new JDateChooser();
+        datosVuelo.add(fechaChooser);
+
+
         JLabel horaSalidaLabel = new JLabel("HORA DE SALIDA: ");
         datosVuelo.add(horaSalidaLabel);
         JTextField horaSalidaTexfield = new JTextField();
@@ -64,6 +71,11 @@ public class anadirVuelo extends JFrame {
         aceptar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // Obtener la fecha seleccionada del JDateChooser
+                java.util.Date selectedDate = fechaChooser.getDate();
+                // Convertir la fecha a una cadena en el formato deseado (por ejemplo, "yyyy-MM-dd")
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                String fecha = sdf.format(selectedDate);
                 ResultSet resTrayectos = con.ejecutarConsulta("SELECT idTrayecto from trayectos where origen like" + "'" +
                         origenTexfield.getText() + "'" + " and destino like " + "'" + destinoTexfield.getText() + "'");
                 int idTray;
@@ -91,7 +103,8 @@ public class anadirVuelo extends JFrame {
                                 INSERT INTO vuelos(fecha, horaSalida, horaLlegada, idAvion, idTrayecto)
                                 VALUES (?,?,?,?,?);
                                     """);
-                    p.setString(1,fechaTexfield.getText());
+
+                    p.setString(1, fecha);
                     p.setString(2,horaSalidaTexfield.getText());
                     p.setString(3, horaLlegadaTexfield.getText());
                     p.setInt(4, Integer.parseInt((String) idAvionesCombo.getSelectedItem()));
@@ -113,6 +126,9 @@ public class anadirVuelo extends JFrame {
                 catch (SQLException ex) {
                     throw new RuntimeException ( ex );
                 }
+                Logomens log = new Logomens ();
+                log.escribirRegistro("Vuelo añadido correctamente");
+                dispose();
             }
         });
         limpiar.addActionListener(new ActionListener() {
@@ -121,7 +137,7 @@ public class anadirVuelo extends JFrame {
                 idAvionesCombo.setSelectedItem("1");
                 origenTexfield.setText("");
                 destinoTexfield.setText("");
-                fechaTexfield.setText("");
+                fechaChooser.setDate (null );
                 horaSalidaTexfield.setText("");
                 horaLlegadaTexfield.setText("");
             }
@@ -132,6 +148,7 @@ public class anadirVuelo extends JFrame {
         this.add(datosVuelo,BorderLayout.CENTER);
         this.pack();
         this.setVisible(true);
+        this.setLocationRelativeTo(null);
 
     }
 }
