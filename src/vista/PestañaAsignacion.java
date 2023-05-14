@@ -6,6 +6,7 @@ import modelo.Miembro2;
 import modelo.Vuelo;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
@@ -22,7 +23,7 @@ import java.util.Iterator;
 
 public class PestañaAsignacion {
     String idAvion;
-    int idVuelo;
+    int idVuelo = -1;
     PestañaAsignacion(JTabbedPane tabbedPane) throws SQLException {
         // Pestaña de Asignación
         JPanel assignmentsPanel = new JPanel();
@@ -34,7 +35,7 @@ public class PestañaAsignacion {
         JPanel center = new JPanel();
         JPanel centerLeft = new JPanel();
         JPanel centerRight = new JPanel();
-        JLabel logistica = new JLabel("Logistica vuelo");
+        centerLeft.setBorder(new TitledBorder("Logística Vuelo: "));
         JLabel avionLabel = new JLabel("AVIÓN: ");
         JLabel modeloLabel = new JLabel();
         ConexionBD con = new ConexionBD();
@@ -121,15 +122,6 @@ public class PestañaAsignacion {
 
         JLabel vueloLabel = new JLabel("VUELO: ");
         JLabel tripuLabel = new JLabel("TRIPULACIÓN: ");
-        centerLeft.add(logistica);
-        centerLeft.add(avionLabel);
-        centerLeft.add(avionBox);
-        centerLeft.add(modeloLabel);
-        centerLeft.add(vueloLabel);
-        centerLeft.add(trayectoCombo);
-        centerLeft.add(fechaVuelo);
-        centerLeft.add(horaVuelo);
-        centerLeft.add(tripuLabel);
         // Crear un campo de texto para mostrar los miembros
         JList<Miembro2> miembrosList=new JList<>();
 
@@ -149,6 +141,20 @@ public class PestañaAsignacion {
             miembrosModel.addElement(miembro);
         }
         JTextArea tripSelec = new JTextArea();
+        tripSelec.setEditable(false);
+        tripSelec.setLineWrap(true);
+        tripSelec.setWrapStyleWord(true);
+        tripSelec.setPreferredSize(new Dimension(100, 150));
+        centerLeft.add(avionLabel);
+        centerLeft.add(avionBox);
+        centerLeft.add(modeloLabel);
+        centerLeft.add(vueloLabel);
+        centerLeft.add(trayectoCombo);
+        centerLeft.add(fechaVuelo);
+        centerLeft.add(tripuLabel);
+        centerLeft.add(scrollPane);
+        centerLeft.add(tripSelec);
+        centerLeft.setPreferredSize(new Dimension(250,300));
         ArrayList<Miembro2> miembrosSelec = new ArrayList<>();
         miembrosList.addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -157,7 +163,7 @@ public class PestañaAsignacion {
                     Miembro2 selec = miembrosList.getSelectedValue();
                     if (selec!=null && miembrosSelec.size()<5){
                             miembrosSelec.add(selec);
-                            tripSelec.setText(selec + "; " + tripSelec.getText());
+                            tripSelec.append(selec.toString()+"\n");
 
                     } else {
                         UIManager.put("OptionPane.yesButtonText", "Sí");
@@ -170,8 +176,6 @@ public class PestañaAsignacion {
                 }
             }
         });
-        centerLeft.add(scrollPane);
-        centerLeft.add(tripSelec);
         centerRight.add(pasajeros);
         center.add(centerLeft);
         center.add(centerRight);
