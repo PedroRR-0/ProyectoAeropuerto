@@ -100,25 +100,41 @@ public class AñadirPasajero extends JFrame {
                 String telefono = telefonoTexfield.getText();
                 String correo = correoTexfield.getText();
                 String direccion = direccionTexfield.getText();
+                String idVuelo = (String) idAvionesCombo.getSelectedItem();
+                int numeroIdVuelo = Integer.parseInt(idVuelo);
 
 
                 // Guardar los datos en la base de datos
                 ConexionBD con = new ConexionBD();
+                int idAvion = 0; // Variable para guardar el valor de idAvion
                 try {
+                    String query = "SELECT idAvion FROM vuelos WHERE idVuelo = ?";
+                    PreparedStatement statement = con.getConexion().prepareStatement(query);
+                    statement.setInt(1, numeroIdVuelo);
+                    ResultSet resultSet = statement.executeQuery();
+                    if (resultSet.next()) {
+                        idAvion = resultSet.getInt("idAvion");
+                    }
                     PreparedStatement p = con.getConexion().prepareStatement("""
-                INSERT INTO pasajeros(idPasajeros, DNI, Nombre, Apellido1, Apellido2, fechaNacimiento, Telefono, ecorreo, Direccion)
+                INSERT INTO pasajeros(DNI, Nombre, Apellido1, Apellido2, fechaNacimiento, Telefono, ecorreo, Direccion)
                 VALUES (?,?,?,?,?,?,?,?,?);
             """);
-                    p.setInt(1, idPasajero);
-                    p.setString(2, dni);
-                    p.setString(3, nombre);
-                    p.setString(4, apellido1);
-                    p.setString(5, apellido2);
-                    p.setString(6, edad);
-                    p.setString(7, telefono);
-                    p.setString(8, correo);
-                    p.setString(9, direccion);
+                    p.setString(1, dni);
+                    p.setString(2, nombre);
+                    p.setString(3, apellido1);
+                    p.setString(4, apellido2);
+                    p.setString(5, edad);
+                    p.setString(6, telefono);
+                    p.setString(7, correo);
+                    p.setString(8, direccion);
                     p.executeUpdate();
+                    PreparedStatement p2 = con.getConexion().prepareStatement("""
+                INSERT INTO pasajeros_vuelos(idPasajeros,idVuelo,idAvion)
+                VALUES (?,?,?);
+            """);
+                    p2.setInt ( 1,idPasajero );
+                    p2.setInt ( 2,numeroIdVuelo );
+                    p2.setInt ( 3,idAvion );
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -150,6 +166,7 @@ public class AñadirPasajero extends JFrame {
 
             }
         });
+
         botones.add(aceptar);
         botones.add(limpiar);
         this.add(botones,BorderLayout.SOUTH);

@@ -60,7 +60,8 @@ public class PestañaPasajeros {
                             resultado3.getString("edad"),
                             resultado.getString("telefono"),
                             resultado.getString("ecorreo"),
-                            resultado.getString("direccion")
+                            resultado.getString("direccion"),
+                            resultado.getString("idVuelo")
                     });
                 }
         }
@@ -161,7 +162,7 @@ public class PestañaPasajeros {
         modeloTabla.setRowCount(0);
         // Agregar los vuelos al modelo de la tabla
         while (resultado.next()) {
-            modeloTabla.addRow(new Object[]{ resultado.getInt("idPasajeros"), resultado.getString("dni"), resultado.getString("nombre"),  resultado.getString("apellido1"), resultado.getString("apellido2"), resultado.getString("fechaNacimiento"), resultado.getString("ecorreo"), resultado.getInt("telefono"), resultado.getString("direccion"), });
+            modeloTabla.addRow(new Object[]{ resultado.getInt("idPasajeros"), resultado.getString("dni"), resultado.getString("nombre"),  resultado.getString("apellido1"), resultado.getString("apellido2"), resultado.getString("fechaNacimiento"), resultado.getString("ecorreo"), resultado.getInt("telefono"), resultado.getString("direccion"),resultado  });
         }
         // Cerrar la conexión a la base de datos
         conexionBD.cerrarConexion();
