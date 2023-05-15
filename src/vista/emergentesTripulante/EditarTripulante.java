@@ -1,30 +1,31 @@
-package vista;
+package vista.emergentesTripulante;
 
 import controlador.Logomens;
 import modelo.ConexionBD;
 import com.toedter.calendar.JCalendar;
+import vista.PestañaTripulantes;
+
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class EditarTripulante {
-    public EditarTripulante(){
+    public EditarTripulante() {
     }
-    public void actionPerformed(ActionEvent e, String selected, DefaultListModel<String> miembrosModel) {
-        PestañaTripulantes pesTrip = new PestañaTripulantes();
+
+    public void actionPerformed(ActionEvent e, String selected, DefaultListModel<String> miembrosModel) throws IOException {
         // Obtener el miembro seleccionado de la lista
-        String miembroSeleccionado = selected;
 
         // Extraer el número de teléfono del miembro seleccionado
-        String telefonoSeleccionado = miembroSeleccionado.substring(0, miembroSeleccionado.indexOf(" "));
+        String telefonoSeleccionado = selected.substring(0, selected.indexOf(" "));
 
         // Obtener los datos actuales del miembro desde la base de datos
         ConexionBD conexionBD = new ConexionBD();
@@ -49,9 +50,11 @@ public class EditarTripulante {
                 categoria = resultado.getString("categoria");
             }
         } catch (SQLException ex) {
+            ex.printStackTrace();
             throw new RuntimeException(ex);
+        } finally {
+            conexionBD.cerrarConexion();
         }
-        conexionBD.cerrarConexion();
 
         // Mostrar una ventana de diálogo con los datos actuales del miembro para editarlos
         JTextField telefonoField = new JTextField(telefono);
@@ -66,10 +69,10 @@ public class EditarTripulante {
         JComboBox<String> categoriaComboBox = new JComboBox<>(categorias);
         categoriaComboBox.setSelectedItem(categoria);
         JButton selecFoto = new JButton("Seleccionar");
-        JFileChooser      fileChooser       = new JFileChooser();
+        JFileChooser fileChooser = new JFileChooser();
         FileNameExtensionFilter imgFilter = new FileNameExtensionFilter("Imágenes", "jpg", "jpeg", "png");
         fileChooser.addChoosableFileFilter(imgFilter);
-        ActionListener fotoChooser = new ActionListener() {
+        selecFoto.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int result = fileChooser.showOpenDialog(null);
@@ -81,8 +84,7 @@ public class EditarTripulante {
                     System.out.println("No se seleccionó ningún archivo.");
                 }
             }
-        };
-        selecFoto.addActionListener(fotoChooser);
+        });
         Object[] message = {
                 "Teléfono:", telefonoField,
                 "Nombre:", nombreField,
@@ -94,7 +96,10 @@ public class EditarTripulante {
                 "Categoría:", categoriaComboBox,
                 "Foto:", selecFoto
         };
-        int option = JOptionPane.showConfirmDialog(null, message, "Editar Miembro", JOptionPane.OK_CANCEL_OPTION);
+        //Crear un ImagenIcon personalizado
+        ImageIcon cambio = new ImageIcon ( obtenerFotoTripulante(telefono));
+
+        int option = JOptionPane.showConfirmDialog(null, message, "Editar Miembro", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, cambio);
         if (option == JOptionPane.OK_OPTION) {
             // Obtener los nuevos datos ingresados por el usuario
             String nuevoTelefono = telefonoField.getText();
@@ -106,18 +111,18 @@ public class EditarTripulante {
             String nuevoEmail = emailField.getText();
             String nuevaCategoria = (String) categoriaComboBox.getSelectedItem();
 
+
             // Leer la foto seleccionada por el usuario y convertirla en un arreglo de bytes
             File fotoFile = fileChooser.getSelectedFile();
-            byte[] fotoBytes = null;
-            try {
+
+            byte[] fotoBytes = obtenerFotoTripulante ( telefono );
+            if (fotoFile != null) {
                 fotoBytes = leerBytesFoto(fotoFile);
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
             }
 
             // Actualizar los datos del miembro en la base de datos, incluyendo la foto
             ConexionBD conexion = new ConexionBD();
-            PreparedStatement statement;
+            PreparedStatement statement = null;
             try {
                 statement = conexion.getConexion().prepareStatement("UPDATE miembros SET telefono=?, nombre=?, apellido1=?, apellido2=?, direccion=?, fechaNacimiento=?, ecorreo=?, categoria=?, foto=? WHERE telefono=?");
                 statement.setString(1, nuevoTelefono);
@@ -132,60 +137,75 @@ public class EditarTripulante {
                 statement.setString(10, telefonoSeleccionado);
                 statement.executeUpdate();
             } catch (SQLException ex) {
+                ex.printStackTrace();
                 throw new RuntimeException(ex);
+            } finally {
+                conexion.cerrarConexion();
             }
+
             JOptionPane.showMessageDialog(null, "El/La tripulante se ha editado correctamente");
-            conexion.cerrarConexion();
 
             // Actualizar la lista de miembros
             miembrosModel.clear();
             ConexionBD conexionBD2 = new ConexionBD();
             ResultSet salida = conexionBD2.ejecutarConsulta("SELECT * FROM miembros");
-            while (true) {
-                try {
-                    if (!salida.next()) break;
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
+            try {
+                while (salida.next()) {
+                    String telefonoDB = salida.getString("telefono");
+                    String nombreDB = salida.getString("nombre");
+                    String apellido1DB = salida.getString("apellido1");
+                    String apellido2DB = salida.getString("apellido2");
+                    String categoriaDB = salida.getString("categoria");
+                    String miembro = telefonoDB + " " + nombreDB + " " + apellido1DB + " " + apellido2DB + " (" + categoriaDB + ")";
+                    miembrosModel.addElement(miembro);
                 }
-                String telefonoDB = null;
-                try {
-                    telefonoDB = salida.getString("telefono");
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
-                }
-                String nombreDB = null;
-                try {
-                    nombreDB = salida.getString("nombre");
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
-                }
-                String apellido1DB = null;
-                try {
-                    apellido1DB = salida.getString("apellido1");
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
-                }
-                String apellido2DB = null;
-                try {
-                    apellido2DB = salida.getString("apellido2");
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
-                }
-                String categoriaDB = null;
-                try {
-                    categoriaDB = salida.getString("categoria");
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
-                }
-                String miembro = telefonoDB + " " + nombreDB + " " + apellido1DB + " " + apellido2DB + " (" + categoriaDB + ")";
-                miembrosModel.addElement(miembro);
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                throw new RuntimeException(ex);
+            } finally {
+                conexionBD2.cerrarConexion();
             }
+
             Logomens log = new Logomens();
             log.escribirRegistro("Tripulante editado correctamente.");
-            conexionBD2.cerrarConexion();
         }
     }
 
+    private byte[] obtenerFotoTripulante(String telefono) {
+        ConexionBD conexionBD = new ConexionBD();
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        byte[] fotoBytes = null; // Inicializar con valor nulo
+
+        try {
+            // Consulta SQL para obtener la foto del tripulante
+            String query = "SELECT foto FROM miembros WHERE telefono = ?";
+            statement = conexionBD.getConexion().prepareStatement(query);
+            statement.setString(1, telefono);
+            resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                // Obtener la foto del resultado de la consulta
+                fotoBytes = resultSet.getBytes("foto");
+            }
+
+            // Si no hay foto disponible en la base de datos, asignar una foto por defecto
+            if (fotoBytes == null) {
+                File fotoFile = new File("Recursos/default.png");
+                try {
+                    fotoBytes = leerBytesFoto(fotoFile);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            throw new RuntimeException(ex);
+        } finally {
+            conexionBD.cerrarConexion();
+        }
+        return fotoBytes;
+    }
     // Método para leer los bytes de una imagen
     private byte[] leerBytesFoto(File file) throws IOException {
         FileInputStream fis = new FileInputStream(file);
@@ -200,6 +220,22 @@ public class EditarTripulante {
         }
         byte[] bytes = bos.toByteArray();
         fis.close();
-        return bytes;
+
+        // Redimensionar la imagen a 200x200 píxeles
+        BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream (bytes));
+        Image         resizedImage  = originalImage.getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+        BufferedImage resizedBufferedImage = new BufferedImage(200, 200, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = resizedBufferedImage.createGraphics();
+        g.drawImage(resizedImage, 0, 0, null);
+        g.dispose();
+
+        // Convertir la imagen redimensionada a un arreglo de bytes
+        ByteArrayOutputStream resizedBos = new ByteArrayOutputStream();
+        ImageIO.write(resizedBufferedImage, "png", resizedBos);
+        byte[] resizedBytes = resizedBos.toByteArray();
+        resizedBos.close();
+
+        return resizedBytes;
     }
+
 }

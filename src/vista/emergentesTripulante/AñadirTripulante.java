@@ -1,4 +1,4 @@
-package vista;
+package vista.emergentesTripulante;
 
 import controlador.Logomens;
 import modelo.ConexionBD;

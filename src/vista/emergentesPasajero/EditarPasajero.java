@@ -1,6 +1,7 @@
-package vista;
+package vista.emergentesPasajero;
 
 import modelo.ConexionBD;
+import vista.PestañaPasajeros;
 
 import javax.swing.*;
 import java.awt.*;

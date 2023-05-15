@@ -1,9 +1,9 @@
-package vista;
+package vista.emergentesPasajero;
 
 import modelo.ConexionBD;
+import vista.PestañaPasajeros;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,7 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class AñadirPasajero extends JFrame {
-    AñadirPasajero(JTable flightsTable){
+    public AñadirPasajero ( JTable flightsTable ){
         this.setLayout(new BorderLayout());
         JLabel vueloLabel = new JLabel("Pasajeros");
         JPanel vueloPanel = new JPanel();

@@ -1,6 +1,9 @@
 package vista;
 
 import modelo.ConexionBD;
+import vista.emergentesTripulante.AñadirTripulante;
+import vista.emergentesTripulante.EditarTripulante;
+import vista.emergentesTripulante.EliminarTripulante;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -9,6 +12,7 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -195,6 +199,8 @@ public class PestañaTripulantes{
                                 correo.setText ( miembro.getString ( "ecorreo" ) );
                                 try {
                                     int telefono = miembro.getInt ( "telefono" );
+
+
                                     ImageIcon imagen = conexionBD3.obtenerImagen ( telefono );
                                     photolabel.setSize ( 150 ,150 );
                                     photolabel.setIcon ( imagen );
@@ -206,11 +212,13 @@ public class PestañaTripulantes{
                                     photoLabel.setVerticalAlignment(JLabel.CENTER); // Centrar la imagen verticalmente
                                 }
                                 catch (NullPointerException ex) {
-                                    photolabel.setIcon ( null );
-                                    photoLabel.setIcon(null);
-                                    System.out.println ("Este miembro no tiene foto." );
+                                    ImageIcon imagen2 = new ImageIcon("Recursos/default.png");
+                                    Image imagen3 = imagen2.getImage().getScaledInstance(150, 150, Image.SCALE_DEFAULT);
+                                    ImageIcon imagen4 = new ImageIcon(imagen3);
+                                    photolabel.setIcon(imagen4);
+                                    photoLabel.setIcon(imagen4);
+                                    System.out.println("Este miembro no tiene foto.");
                                 }
-
                             }
                         }
                         catch (SQLException ex) {
@@ -245,7 +253,12 @@ public class PestañaTripulantes{
                 String selectedMember=miembrosList.getSelectedValue();
                 if(selectedMember!=null) {
                     EditarTripulante editar = new EditarTripulante();
-                    editar.actionPerformed(e, selectedMember, miembrosModel );
+                    try {
+                        editar.actionPerformed(e, selectedMember, miembrosModel );
+                    }
+                    catch ( IOException ex ) {
+                        throw new RuntimeException ( ex );
+                    }
                 }else {
                     JOptionPane.showMessageDialog(null, "Debe seleccionar un tripulante.");
                 }
@@ -268,7 +281,7 @@ public class PestañaTripulantes{
         addButton.addActionListener(new ActionListener(){
 
             public void actionPerformed( ActionEvent e ){
-                AñadirTripulante Añadir=new AñadirTripulante();
+                AñadirTripulante Añadir =new AñadirTripulante();
                 Añadir.actionPerformed(e,miembrosModel);
             }
         });
@@ -278,7 +291,7 @@ public class PestañaTripulantes{
             public void actionPerformed( ActionEvent e ){
                 String selectedMember=miembrosList.getSelectedValue();
                 if(selectedMember!=null) {
-                    EliminarTripulante Eliminar=new EliminarTripulante();
+                    EliminarTripulante Eliminar =new EliminarTripulante();
                     Eliminar.actionPerformed(e,miembrosList,miembrosModel);
                     photolabel.setIcon ( null );
                     photoLabel.setIcon(null);

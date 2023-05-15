@@ -1,6 +1,8 @@
 package vista;
 
 import modelo.ConexionBD;
+import vista.emergentesPasajero.AñadirPasajero;
+import vista.emergentesPasajero.EditarPasajero;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;

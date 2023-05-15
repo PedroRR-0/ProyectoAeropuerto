@@ -1,12 +1,10 @@
-package vista;
+package vista.emergentesVuelo;
 
 import controlador.Logomens;
 import modelo.ConexionBD;
-
-import java.sql.Date;
-import java.text.SimpleDateFormat;
-import com.toedter.calendar.JCalendar;
 import com.toedter.calendar.JDateChooser;
+import vista.PestaniaVuelos;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -15,10 +13,11 @@ import java.awt.event.ActionListener;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 
-public class anadirVuelo extends JFrame {
+public class editarVuelo extends JFrame {
 
-    public anadirVuelo(JTable flightsTable){
+    public editarVuelo(String selec, JTable flightsTable){
 
         this.setLayout(new BorderLayout());
         JLabel vueloLabel = new JLabel("VUELO");
@@ -26,13 +25,28 @@ public class anadirVuelo extends JFrame {
         vueloPanel.add(vueloLabel);
         this.add(vueloPanel, BorderLayout.NORTH);
         JPanel datosVuelo = new JPanel();
-        datosVuelo.setLayout(new GridLayout(6,2));
+        datosVuelo.setLayout(new GridLayout(7,2));
         JLabel idAvionLabel = new JLabel("ID AVION: ");
-        datosVuelo.add(idAvionLabel);
+        JLabel idVueloLabel = new JLabel("ID VUELO: ");
+        datosVuelo.add(idVueloLabel);
         JComboBox<String> idAvionesCombo = new JComboBox<>();
+        JComboBox<String> idVuelosCombo = new JComboBox<>();
         ConexionBD con = new ConexionBD();
-        String query = "SELECT idAvion from aviones where estado=1 order by 1";
+        String query = "SELECT idVuelo from vuelos order by 1";
         ResultSet resul = con.ejecutarConsulta(query);
+        while(true){
+            try {
+                if (!resul.next()) break;
+                idVuelosCombo.addItem(String.valueOf(resul.getInt("idVuelo")));
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+
+        }
+        datosVuelo.add(idVuelosCombo);
+        datosVuelo.add(idAvionLabel);
+        query = "SELECT idAvion from aviones where estado=1 order by 1";
+        resul = con.ejecutarConsulta(query);
         while(true){
             try {
                 if (!resul.next()) break;
@@ -52,11 +66,9 @@ public class anadirVuelo extends JFrame {
         JTextField destinoTexfield = new JTextField();
         datosVuelo.add(destinoTexfield);
         JLabel fechaLabel = new JLabel("FECHA: ");
-        datosVuelo.add(fechaLabel);
         JDateChooser fechaChooser = new JDateChooser();
+        datosVuelo.add(fechaLabel);
         datosVuelo.add(fechaChooser);
-
-
         JLabel horaSalidaLabel = new JLabel("HORA DE SALIDA: ");
         datosVuelo.add(horaSalidaLabel);
         JTextField horaSalidaTexfield = new JTextField();
@@ -68,14 +80,41 @@ public class anadirVuelo extends JFrame {
         JButton aceptar = new JButton("ACEPTAR");
         JButton limpiar = new JButton("LIMPIAR CAMPOS");
         JPanel botones = new JPanel();
+        // Obtener los datos del vuelo seleccionado de la base de datos
+        String query2 = "SELECT * FROM vuelos join trayectos on vuelos.idTrayecto=trayectos.idTrayecto WHERE idVuelo = ?";
+        try {
+            PreparedStatement stmt = con.getConexion().prepareStatement(query2);
+            stmt.setInt(1, Integer.parseInt(selec));
+            ResultSet result = stmt.executeQuery();
+
+            if (result.next()) {
+                // Obtener la fecha del resultado de la consulta SQL
+                java.sql.Date fechaSQL = result.getDate("fecha");
+                // Crear un objeto java.util.Date a partir de la fecha obtenida
+                java.util.Date fechaUtil = new java.util.Date(fechaSQL.getTime());
+                fechaChooser.setDate (fechaUtil);
+                // Establecer los valores correspondientes en los componentes de la interfaz de usuario
+                idVuelosCombo.setSelectedItem(String.valueOf(result.getInt("idVuelo")));
+                idAvionesCombo.setSelectedItem(String.valueOf(result.getInt("idAvion")));
+                origenTexfield.setText(result.getString("origen"));
+                destinoTexfield.setText(result.getString("destino"));
+                horaSalidaTexfield.setText(result.getString("horaSalida"));
+                horaLlegadaTexfield.setText(result.getString("horaLlegada"));
+            }
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
         aceptar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Obtener la fecha seleccionada del JDateChooser
-                java.util.Date selectedDate = fechaChooser.getDate();
+                java.util.Date fechaSeleccionada = fechaChooser.getDate();
+                // Convertir la fecha al formato deseado
+                java.sql.Date fechaSQL = new java.sql.Date(fechaSeleccionada.getTime());
                 // Convertir la fecha a una cadena en el formato deseado (por ejemplo, "yyyy-MM-dd")
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                String fecha = sdf.format(selectedDate);
+                String fecha = sdf.format(fechaSeleccionada);
+
                 ResultSet resTrayectos = con.ejecutarConsulta("SELECT idTrayecto from trayectos where origen like" + "'" +
                         origenTexfield.getText() + "'" + " and destino like " + "'" + destinoTexfield.getText() + "'");
                 int idTray;
@@ -100,44 +139,52 @@ public class anadirVuelo extends JFrame {
                 }
                 try {
                     PreparedStatement p = con.getConexion().prepareStatement("""
-                                INSERT INTO vuelos(fecha, horaSalida, horaLlegada, idAvion, idTrayecto)
-                                VALUES (?,?,?,?,?);
+                                UPDATE vuelos
+                                SET fecha = ?,
+                                horaSalida = ?,
+                                horaLlegada = ?,
+                                idAvion = ?,
+                                idVuelo = ?,
+                                idTrayecto = ?
+                                WHERE idVuelo = ?
+                                ;
                                     """);
-
-                    p.setString(1, fecha);
+                    p.setString(1,fecha);
                     p.setString(2,horaSalidaTexfield.getText());
                     p.setString(3, horaLlegadaTexfield.getText());
                     p.setInt(4, Integer.parseInt((String) idAvionesCombo.getSelectedItem()));
-                    p.setInt(5,idTray);
+                    p.setInt(5, Integer.parseInt((String) idVuelosCombo.getSelectedItem()));
+                    p.setInt(6,idTray);
+                    p.setInt(7, Integer.parseInt(selec));
                     p.executeUpdate();
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
                 }
                 PestaniaVuelos p = null;
                 try {
-                    p = new PestaniaVuelos ();
+                    p = new PestaniaVuelos();
                 }
                 catch (SQLException ex) {
-                    throw new RuntimeException ( ex );
+                    throw new RuntimeException(ex);
                 }
                 try {
-                    p.actualizarTabla (flightsTable );
+                    p.actualizarTabla(flightsTable);
                 }
                 catch (SQLException ex) {
-                    throw new RuntimeException ( ex );
+                    throw new RuntimeException(ex);
                 }
-                Logomens log = new Logomens ();
-                log.escribirRegistro("Vuelo añadido correctamente");
+                Logomens log = new Logomens();
+                log.escribirRegistro("Vuelo editado correctamente.");
                 dispose();
             }
+
         });
         limpiar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                idAvionesCombo.setSelectedItem("1");
                 origenTexfield.setText("");
                 destinoTexfield.setText("");
-                fechaChooser.setDate (null );
+                fechaChooser.setDate(null);
                 horaSalidaTexfield.setText("");
                 horaLlegadaTexfield.setText("");
             }
@@ -149,6 +196,5 @@ public class anadirVuelo extends JFrame {
         this.pack();
         this.setVisible(true);
         this.setLocationRelativeTo(null);
-
     }
 }

@@ -2,6 +2,9 @@ package vista;
 
 import controlador.Logomens;
 import modelo.ConexionBD;
+import vista.emergentesVuelo.anadirVuelo;
+import vista.emergentesVuelo.editarVuelo;
+
 import java.text.SimpleDateFormat;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -13,7 +16,7 @@ import java.sql.SQLException;
 
 public class PestaniaVuelos extends JPanel {
 
-    PestaniaVuelos() throws SQLException {
+    public PestaniaVuelos ( ) throws SQLException {
         obtenerVuelos ();
     }
     public void obtenerVuelos() throws SQLException {
