@@ -5,6 +5,8 @@ import modelo.ConexionBD;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -75,14 +77,94 @@ public class PestañaPasajeros {
         JButton editPassengerButton = new JButton ( "Editar" );
         JButton deletePassengerButton = new JButton ( "Eliminar" );
         JPanel passengerButtonsPanel = new JPanel ( );
+
+
+        // Agregar el panel de pasajeros al panel de pestañas
+        tabbedPane.addTab ( "Pasajeros" ,passengerPanel );
+
+        addPassengerButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                AñadirPasajero v = new AñadirPasajero(passengerTable);
+                try {
+                    actualizarTabla(passengerTable);
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+        editPassengerButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int row = passengerTable.getSelectedRow();
+                boolean flag = false;
+                String selec = "";
+
+                try {
+                    selec = passengerTable.getModel().getValueAt(row, 0).toString();
+                    flag = true;
+                } catch (ArrayIndexOutOfBoundsException ex){
+                    JOptionPane.showMessageDialog(null, "Por favor, seleccione un pasajero");
+                }
+
+                if (flag) {
+                    EditarPasajero ed = new EditarPasajero(selec, passengerTable);
+                    try {
+                        conexionBD.cerrarConexion();
+                        actualizarTabla(passengerTable);
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        deletePassengerButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int row = passengerTable.getSelectedRow();
+                Boolean flag = false;
+                int selec = 0;
+                try {
+                    selec = Integer.parseInt(passengerTable.getModel().getValueAt(row, 0).toString());
+                    flag = true;
+                } catch (ArrayIndexOutOfBoundsException ex){
+                    JOptionPane.showMessageDialog(null, "Por favor, seleccione un vuelo");
+                }
+                if(flag){
+                    ConexionBD conexionBD1 = new ConexionBD ();
+                    conexionBD1.ejecutarConsulta("DELETE from pasajeros where idPasajeros = "+selec);
+                    JOptionPane.showMessageDialog(null, "Pasajero borrado con éxito");
+                    try {
+                        conexionBD.cerrarConexion();
+                        actualizarTabla(passengerTable);
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        });
         passengerButtonsPanel.setBorder ( BorderFactory.createEmptyBorder ( 10 ,10 ,10 ,10 ) ); // Margen de 10 en todos los lados
         passengerButtonsPanel.setLayout ( new FlowLayout ( FlowLayout.CENTER ,20 ,10 ) ); // Mayor margen entre los botones
         passengerButtonsPanel.add ( addPassengerButton );
         passengerButtonsPanel.add ( editPassengerButton );
         passengerButtonsPanel.add ( deletePassengerButton );
         passengerPanel.add ( passengerButtonsPanel ,BorderLayout.SOUTH );
-
-        // Agregar el panel de pasajeros al panel de pestañas
-        tabbedPane.addTab ( "Pasajeros" ,passengerPanel );
     }
+    public void actualizarTabla(JTable flightsTable) throws SQLException {
+        // Crear una instancia de la clase de conexión a la base de datos
+        ConexionBD conexionBD = new ConexionBD();
+        // Ejecutar una consulta para obtener todos los vuelos de la tabla de vuelos
+        ResultSet resultado = conexionBD.ejecutarConsulta("SELECT * FROM pasajeros");
+        DefaultTableModel modeloTabla = (DefaultTableModel) flightsTable.getModel();
+        // Limpiar el modelo de la tabla
+        modeloTabla.setRowCount(0);
+        // Agregar los vuelos al modelo de la tabla
+        while (resultado.next()) {
+            modeloTabla.addRow(new Object[]{ resultado.getInt("idPasajeros"), resultado.getString("dni"), resultado.getString("nombre"),  resultado.getString("apellido1"), resultado.getString("apellido2"), resultado.getString("fechaNacimiento"), resultado.getString("ecorreo"), resultado.getInt("telefono"), resultado.getString("direccion"), });
+        }
+        // Cerrar la conexión a la base de datos
+        conexionBD.cerrarConexion();
+    }
+
 }
