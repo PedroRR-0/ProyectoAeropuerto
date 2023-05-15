@@ -21,12 +21,14 @@ public class PestañaTripulantes{
         // Crear un modelo de lista por defecto y agregarlo a la lista
         DefaultListModel < String > miembrosModel=new DefaultListModel <>();
         miembrosList.setModel(miembrosModel);
+        miembrosList.setVisibleRowCount(25);
 
         // Agregar la lista de miembros al panel de la pestaña tripulantes
         crewPanel = new JPanel(new BorderLayout()); // Cambiar el layout a BorderLayout
         JScrollPane scrollPane = new JScrollPane(miembrosList); // Agregar un JScrollPane para permitir desplazamiento
-        scrollPane.setPreferredSize(new Dimension(200, 200)); // Establecer tamaño de la lista
-        crewPanel.add(scrollPane, BorderLayout.CENTER); // Agregar el JScrollPane al centro
+        JPanel left = new JPanel();
+        left.add(scrollPane);
+        JPanel right = new JPanel();
 
         // Obtener los datos de la tabla "miembros" y agregarlos al modelo de lista
         ConexionBD conexionBD2=new ConexionBD();
@@ -205,6 +207,7 @@ public class PestañaTripulantes{
                                 }
                                 catch (NullPointerException ex) {
                                     photolabel.setIcon ( null );
+                                    photoLabel.setIcon(null);
                                     System.out.println ("Este miembro no tiene foto." );
                                 }
 
@@ -285,6 +288,10 @@ public class PestañaTripulantes{
         });
 
         // Agregar los botones al JPanel de botones
+        GridLayout grid = new GridLayout(4,1);
+        grid.setVgap(10);
+        buttonsPanel.setLayout(grid);
+        buttonsPanel.setBorder(new EmptyBorder(0,0,30,0));
         buttonsPanel.add(editButton);
         buttonsPanel.add(addButton);
         buttonsPanel.add(deleteButton);
@@ -300,12 +307,18 @@ public class PestañaTripulantes{
 
 
         // Agregar el espacio al JPanel contenedor
-        buttonsAndSpacePanel.add(photoLabel, BorderLayout.CENTER);
+        right.setLayout(new BorderLayout());
+        right.add(photoLabel, BorderLayout.NORTH);
+        right.add(buttonsPanel, BorderLayout.SOUTH);
+        JPanel centro = new JPanel();
+        right.setPreferredSize(new Dimension(250,500));
+        right.setBorder(new EmptyBorder(30,100,0,0));
+        centro.add(left);
+        centro.add(right);
+        crewPanel.add(centro,BorderLayout.CENTER);
 
         // Agregar el JPanel contenedor al panel de la pestaña Tripulantes
         crewPanel.add(buttonsAndSpacePanel, BorderLayout.SOUTH);
-
-
 
 
         // Agregar la pestaña de tripulantes al JTabbedPane
