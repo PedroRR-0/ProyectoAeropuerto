@@ -214,8 +214,8 @@ public class PestañaAsignacion {
                             p.setInt(3, m.getId());
                             p.setString(4, fechaComoString);
                             int res1 = p.executeUpdate();
-                            JOptionPane.showMessageDialog(assignmentsPanel,"Tripulantes añadidos con éxito");
                         }
+                            JOptionPane.showMessageDialog(assignmentsPanel,"Tripulantes añadidos con éxito");
                     } else {
                         UIManager.put("OptionPane.yesButtonText", "Sí");
                         int opt = JOptionPane.showConfirmDialog(assignmentsPanel, "Lo sentimos, ya se asignó ese vuelo. ¿Desea empezar de nuevo?", "Información", JOptionPane.YES_NO_OPTION);
