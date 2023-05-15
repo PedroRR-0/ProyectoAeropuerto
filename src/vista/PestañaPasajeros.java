@@ -108,7 +108,12 @@ public class PestañaPasajeros {
                 }
 
                 if (flag) {
-                    EditarPasajero ed = new EditarPasajero(selec, passengerTable);
+                    try {
+                        EditarPasajero ed = new EditarPasajero(selec, passengerTable);
+                    }
+                    catch (SQLException ex) {
+                        throw new RuntimeException ( ex );
+                    }
                     try {
                         conexionBD.cerrarConexion();
                         actualizarTabla(passengerTable);
@@ -151,17 +156,50 @@ public class PestañaPasajeros {
         passengerButtonsPanel.add ( deletePassengerButton );
         passengerPanel.add ( passengerButtonsPanel ,BorderLayout.SOUTH );
     }
-    public void actualizarTabla(JTable flightsTable) throws SQLException {
+    public void actualizarTabla(JTable passengerTable) throws SQLException {
         // Crear una instancia de la clase de conexión a la base de datos
         ConexionBD conexionBD = new ConexionBD();
-        // Ejecutar una consulta para obtener todos los vuelos de la tabla de vuelos
+        // Ejecutar una consulta para obtener todos los pasajeros de la tabla de pasajeros
         ResultSet resultado = conexionBD.ejecutarConsulta("SELECT * FROM pasajeros");
-        DefaultTableModel modeloTabla = (DefaultTableModel) flightsTable.getModel();
+        ResultSet resultado3 = conexionBD.ejecutarConsulta("SELECT edad(fechaNacimiento) as edad FROM pasajeros");
+        DefaultTableModel modeloTabla = (DefaultTableModel) passengerTable.getModel();
         // Limpiar el modelo de la tabla
         modeloTabla.setRowCount(0);
-        // Agregar los vuelos al modelo de la tabla
+        // Agregar los pasajeros al modelo de la tabla
+        boolean flag;
         while (resultado.next()) {
-            modeloTabla.addRow(new Object[]{ resultado.getInt("idPasajeros"), resultado.getString("dni"), resultado.getString("nombre"),  resultado.getString("apellido1"), resultado.getString("apellido2"), resultado.getString("fechaNacimiento"), resultado.getString("ecorreo"), resultado.getInt("telefono"), resultado.getString("direccion"),resultado  });
+            flag = false;
+            resultado3.next();
+            ResultSet resultado2 = conexionBD.ejecutarConsulta("SELECT * FROM pasajeros_vuelos WHERE idPasajeros = " + resultado.getInt("idPasajeros"));
+            while (resultado2.next()) {
+                modeloTabla.addRow(new Object[]{
+                        resultado.getInt("idPasajeros"),
+                        resultado.getString("dni"),
+                        resultado.getString("nombre"),
+                        resultado.getString("apellido1"),
+                        resultado.getString("apellido2"),
+                        resultado3.getString("edad"),
+                        resultado.getString("telefono"),
+                        resultado.getString("ecorreo"),
+                        resultado.getString("direccion"),
+                        resultado2.getInt("idVuelo")
+                });
+                flag = true;
+            }
+            if (!flag) {
+                modeloTabla.addRow(new Object[]{
+                        resultado.getInt("idPasajeros"),
+                        resultado.getString("dni"),
+                        resultado.getString("nombre"),
+                        resultado.getString("apellido1"),
+                        resultado.getString("apellido2"),
+                        resultado3.getString("edad"),
+                        resultado.getString("telefono"),
+                        resultado.getString("ecorreo"),
+                        resultado.getString("direccion"),
+                        ""
+                });
+            }
         }
         // Cerrar la conexión a la base de datos
         conexionBD.cerrarConexion();

@@ -11,7 +11,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class EditarPasajero extends JFrame {
-    public EditarPasajero(String selec, JTable flightsTable) {
+    private String idVueloSeleccionado;
+    public EditarPasajero(String selec, JTable flightsTable) throws SQLException {
         this.setLayout(new BorderLayout());
         JLabel vueloLabel = new JLabel("Pasajeros");
         JPanel vueloPanel = new JPanel();
@@ -69,14 +70,15 @@ public class EditarPasajero extends JFrame {
         datosPasajeros.add(idVueloLabel);
         JComboBox<String> idAvionesCombo = new JComboBox<>();
         ConexionBD con = new ConexionBD();
-        String query = "SELECT idAvion from aviones where estado=1 order by 1";
+        String query = "SELECT distinct(idVuelo) from vuelos";
         ResultSet resul = con.ejecutarConsulta(query);
-        while (true) {
-            try {
-                if (!resul.next()) break;
-                idAvionesCombo.addItem(String.valueOf(resul.getInt("idAvion")));
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
+
+        while (resul.next()) {
+            String idAvion = String.valueOf(resul.getInt("idVuelo"));
+            idAvionesCombo.addItem(idAvion);
+
+            if (idAvion.equals(idVueloSeleccionado)) {
+                idAvionesCombo.setSelectedItem(idAvion);
             }
         }
         datosPasajeros.add(idAvionesCombo);
@@ -84,6 +86,59 @@ public class EditarPasajero extends JFrame {
         JButton aceptar = new JButton("ACEPTAR");
         JButton limpiar = new JButton("LIMPIAR CAMPOS");
         JPanel botones = new JPanel();
+
+        // Obtener los datos del pasajero seleccionado
+
+        PreparedStatement stmt = con.getConexion().prepareStatement("SELECT * FROM pasajeros WHERE idPasajeros = ?");
+        stmt.setString(1, selec);
+        ResultSet rs = stmt.executeQuery();
+
+        if (rs.next()){
+            // Obtener los valores de las columnas de la consulta
+            String idPasajero = rs.getString ( "idPasajeros" );
+            String dni = rs.getString ( "DNI" );
+            String nombre = rs.getString ( "nombre" );
+            String apellido1 = rs.getString ( "apellido1" );
+            String apellido2 = rs.getString ( "apellido2" );
+            String edad = rs.getString ( "fechaNacimiento" );
+            String telefono = rs.getString ( "telefono" );
+            String correo = rs.getString ( "ecorreo" );
+            String direccion = rs.getString ( "direccion" );
+
+            // Establecer los valores en los campos de texto
+            idpasajeroTexfield.setText ( idPasajero );
+            DNITexfield.setText ( dni );
+            nombreTexfield.setText ( nombre );
+            aapellido1Texfield.setText ( apellido1 );
+            apellido2Texfield.setText ( apellido2 );
+            edadTexfield.setText ( edad );
+            telefonoTexfield.setText ( telefono );
+            correoTexfield.setText ( correo );
+            direccionTexfield.setText ( direccion );
+
+            // Obtener el idVuelo del pasajero seleccionado desde la tabla pasajeros_vuelos
+            String query3 = "SELECT idVuelo FROM pasajeros_vuelos WHERE idPasajeros = ?";
+            PreparedStatement stmt2 = con.getConexion().prepareStatement(query3);
+            stmt2.setString(1, idPasajero);
+            ResultSet rs2 = stmt2.executeQuery();
+
+            if (rs2.next()) {
+                idVueloSeleccionado = rs2.getString("idVuelo"); // Asignar el valor a la variable idVueloSeleccionado
+            } else {
+                // Establecer un valor predeterminado en caso de que no haya un idVuelo asociado al pasajero seleccionado
+                idVueloSeleccionado = "No asignado";
+            }
+            // Establecer el valor seleccionado en el JComboBox
+            if (idVueloSeleccionado != null) {
+                idAvionesCombo.setSelectedItem(idVueloSeleccionado);
+            } else {
+                idAvionesCombo.setSelectedIndex(0); // Establece el valor predeterminado como seleccionado
+            }
+            rs2.close();
+            stmt2.close();
+        }
+        rs.close();
+        stmt.close();
 
 
         aceptar.addActionListener(new ActionListener() {
@@ -108,48 +163,93 @@ public class EditarPasajero extends JFrame {
                     return;
                 }
 
-                // Realizar la actualización en la base de datos
+                // Realizar la actualización o inserción en la base de datos
                 ConexionBD con = new ConexionBD();
                 try {
-                    PreparedStatement p = con.getConexion().prepareStatement("""
-                UPDATE pasajeros
-                SET idPasajeros = ?,
-                DNI = ?,
-                nombre = ?,
-                apellido1 = ?,
-                apellido2 = ?,
-                fechaNacimiento = ?,
-                telefono = ?,
-                ecorreo = ?,
-                direccion = ?
-                WHERE idPasajeros = ?
-            """);
-                    p.setString(1, idPasajero);
-                    p.setString(2, dni);
-                    p.setString(3, nombre);
-                    p.setString(4, apellido1);
-                    p.setString(5, apellido2);
-                    p.setString(6, edad);
-                    p.setString(7, telefono);
-                    p.setString(8, correo);
-                    p.setString(9, direccion);
-                    p.setString(10, selec);
-                    p.executeUpdate();
+                    // Comprobar si el pasajero tiene algún vuelo seleccionado en la tabla pasajeros_vuelos
+                    PreparedStatement checkStmt = con.getConexion().prepareStatement("SELECT idVuelo FROM pasajeros_vuelos WHERE idPasajeros = ? and idVuelo= ?");
+                    checkStmt.setString(1, idPasajero);
+                    checkStmt.setString ( 2,idVuelo );
+                    ResultSet checkResult = checkStmt.executeQuery();
 
-                    // Actualizar la tabla de pasajeros
-                    PestañaPasajeros a = new PestañaPasajeros();
-                    try {
-                        a.actualizarTabla(flightsTable);
-                    } catch (SQLException ex) {
-                        throw new RuntimeException(ex);
+                    boolean pasajeroSeleccionado = checkResult.next();
+                    // Realizar la consulta para obtener el idAvion desde la tabla vuelos
+                    PreparedStatement selectVueloStmt = con.getConexion().prepareStatement("SELECT idAvion FROM vuelos WHERE idVuelo = ?");
+                    selectVueloStmt.setString(1, idVuelo);
+                    ResultSet vueloResult = selectVueloStmt.executeQuery();
+                    String idAvion = null;
+                    if (vueloResult.next()) {
+                        idAvion = vueloResult.getString("idAvion");
                     }
-                    // Mostrar mensaje de éxito
-                    JOptionPane.showMessageDialog(EditarPasajero.this, "Pasajero actualizado exitosamente.");
+                    checkResult.close();
+                    checkStmt.close();
+
+                    if (pasajeroSeleccionado) {
+                        // Actualizar la tabla pasajeros
+                        PreparedStatement updateStmt = con.getConexion().prepareStatement("UPDATE pasajeros SET idPasajeros = ?, DNI = ?, nombre = ?, apellido1 = ?, apellido2 = ?, fechaNacimiento = ?, telefono = ?, ecorreo = ?, direccion = ? WHERE idPasajeros = ?");
+                        updateStmt.setString(1, idPasajero);
+                        updateStmt.setString(2, dni);
+                        updateStmt.setString(3, nombre);
+                        updateStmt.setString(4, apellido1);
+                        updateStmt.setString(5, apellido2);
+                        updateStmt.setString(6, edad);
+                        updateStmt.setString(7, telefono);
+                        updateStmt.setString(8, correo);
+                        updateStmt.setString(9, direccion);
+                        updateStmt.setString(10, idPasajero);
+                        updateStmt.executeUpdate();
+                        updateStmt.close();
+
+                        // Actualizar la tabla pasajeros_vuelos
+                        PreparedStatement updateVueloStmt = con.getConexion().prepareStatement("UPDATE pasajeros_vuelos SET idVuelo = ? WHERE idPasajeros = ?");
+                        updateVueloStmt.setString(1, idVuelo);
+                        updateVueloStmt.setString(2, idPasajero);
+                        updateVueloStmt.executeUpdate();
+                        updateVueloStmt.close();
+                    } else {
+                        // Actualizar la tabla pasajeros
+                        PreparedStatement updateStmt = con.getConexion().prepareStatement("UPDATE pasajeros SET idPasajeros = ?, DNI = ?, nombre = ?, apellido1 = ?, apellido2 = ?, fechaNacimiento = ?, telefono = ?, ecorreo = ?, direccion = ? WHERE idPasajeros = ?");
+                        updateStmt.setString(1, idPasajero);
+                        updateStmt.setString(2, dni);
+                        updateStmt.setString(3, nombre);
+                        updateStmt.setString(4, apellido1);
+                        updateStmt.setString(5, apellido2);
+                        updateStmt.setString(6, edad);
+                        updateStmt.setString(7, telefono);
+                        updateStmt.setString(8, correo);
+                        updateStmt.setString(9, direccion);
+                        updateStmt.setString(10, idPasajero);
+                        updateStmt.executeUpdate();
+                        updateStmt.close();
+
+                        // Insertar un nuevo registro en la tabla pasajeros_vuelos
+                        PreparedStatement insertStmt = con.getConexion().prepareStatement("INSERT INTO pasajeros_vuelos (idVuelo, idAvion, idPasajeros) VALUES (?, ?, ?)");
+                        insertStmt.setString(1, idVuelo);
+                        insertStmt.setString ( 2, idAvion );
+                        insertStmt.setString(3, idPasajero);
+                        insertStmt.executeUpdate();
+                        insertStmt.close();
+                    }
                 } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
+                    // Manejar la excepción
+                    ex.printStackTrace();
+                } finally {
+                    // Cerrar las conexiones
+                    con.cerrarConexion();
                 }
+                // Actualizar la tabla de vuelos
+                PestañaPasajeros p = null;
+                p = new PestañaPasajeros ();
+                try {
+                    p.actualizarTabla(flightsTable );
+                }
+                catch (SQLException ex) {
+                    throw new RuntimeException ( ex );
+                }
+                dispose();
             }
         });
+
 
         limpiar.addActionListener(new ActionListener() {
             @Override
@@ -164,13 +264,14 @@ public class EditarPasajero extends JFrame {
                 correoTexfield.setText("");
                 direccionTexfield.setText("");
                 DNITexfield.setText("");
+                con.cerrarConexion();
 
             }
         });
         botones.add(aceptar);
         botones.add(limpiar);
-        this.add(botones,BorderLayout.SOUTH);
-        this.add(datosPasajeros,BorderLayout.CENTER);
+        this.add(botones, BorderLayout.SOUTH);
+        this.add(datosPasajeros, BorderLayout.CENTER);
         this.pack();
         this.setVisible(true);
     }

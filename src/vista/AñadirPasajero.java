@@ -21,11 +21,6 @@ public class AñadirPasajero extends JFrame {
         JPanel datosPasajeros = new JPanel();
         datosPasajeros.setLayout(new GridLayout(6,2));
 
-        JLabel idPasajeroLabel = new JLabel("ID Pasajero: ");
-        datosPasajeros.add(idPasajeroLabel);
-        JTextField idpasajeroTexfield = new JTextField();
-        datosPasajeros.add(idpasajeroTexfield);
-
         JLabel DNILabel = new JLabel("DNI: ");
         datosPasajeros.add(DNILabel);
         JTextField DNITexfield = new JTextField();
@@ -70,12 +65,12 @@ public class AñadirPasajero extends JFrame {
         datosPasajeros.add(idVueloLabel);
         JComboBox<String> idAvionesCombo = new JComboBox<>();
         ConexionBD con = new ConexionBD();
-        String query = "SELECT idAvion from aviones where estado=1 order by 1";
+        String query = "SELECT distinct(idVuelo) from vuelos ";
         ResultSet resul = con.ejecutarConsulta(query);
         while(true){
             try {
                 if (!resul.next()) break;
-                idAvionesCombo.addItem(String.valueOf(resul.getInt("idAvion")));
+                idAvionesCombo.addItem(String.valueOf(resul.getInt("idVuelo")));
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
@@ -91,7 +86,6 @@ public class AñadirPasajero extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Obtener los valores de los campos de texto y el combo box
-                int idPasajero = Integer.parseInt(idpasajeroTexfield.getText());
                 String dni = DNITexfield.getText();
                 String nombre = nombreTexfield.getText();
                 String apellido1 = aapellido1Texfield.getText();
@@ -106,7 +100,7 @@ public class AñadirPasajero extends JFrame {
 
                 // Guardar los datos en la base de datos
                 ConexionBD con = new ConexionBD();
-                int idAvion = 0; // Variable para guardar el valor de idAvion
+                int idAvion = 0; // Variable para guardar el valor de idVuelo
                 try {
                     String query = "SELECT idAvion FROM vuelos WHERE idVuelo = ?";
                     PreparedStatement statement = con.getConexion().prepareStatement(query);
@@ -115,9 +109,10 @@ public class AñadirPasajero extends JFrame {
                     if (resultSet.next()) {
                         idAvion = resultSet.getInt("idAvion");
                     }
+
                     PreparedStatement p = con.getConexion().prepareStatement("""
                 INSERT INTO pasajeros(DNI, Nombre, Apellido1, Apellido2, fechaNacimiento, Telefono, ecorreo, Direccion)
-                VALUES (?,?,?,?,?,?,?,?,?);
+                VALUES (?,?,?,?,?,?,?,?);
             """);
                     p.setString(1, dni);
                     p.setString(2, nombre);
@@ -128,13 +123,26 @@ public class AñadirPasajero extends JFrame {
                     p.setString(7, correo);
                     p.setString(8, direccion);
                     p.executeUpdate();
+                    String query2 = "SELECT idPasajeros from pasajeros where dni=" + dni;
+                    String idPasajeroAA= "";
+                    ResultSet resul = con.ejecutarConsulta(query2);
+                    while(true){
+                        try {
+                            if (!resul.next()) break;
+                            idPasajeroAA = String.valueOf(resul.getInt("idPasajeros"));
+                        } catch (SQLException e2) {
+                            throw new RuntimeException(e2);
+                        }
+
+                    }
                     PreparedStatement p2 = con.getConexion().prepareStatement("""
-                INSERT INTO pasajeros_vuelos(idPasajeros,idVuelo,idAvion)
+                INSERT INTO pasajeros_vuelos(idVuelo,idAvion,idPasajeros)
                 VALUES (?,?,?);
             """);
-                    p2.setInt ( 1,idPasajero );
-                    p2.setInt ( 2,numeroIdVuelo );
-                    p2.setInt ( 3,idAvion );
+                    p2.setInt ( 1,numeroIdVuelo);
+                    p2.setInt ( 2,idAvion );
+                    p2.setInt ( 3,Integer.parseInt ( idPasajeroAA ) );
+                    p2.executeUpdate ();
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -148,13 +156,14 @@ public class AñadirPasajero extends JFrame {
                 catch (SQLException ex) {
                     throw new RuntimeException ( ex );
                 }
+                dispose ();
             }
         });
+
         limpiar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 idAvionesCombo.setSelectedItem("1");
-                idpasajeroTexfield.setText("");
                 nombreTexfield.setText("");
                 aapellido1Texfield.setText("");
                 apellido2Texfield.setText("");
@@ -163,7 +172,6 @@ public class AñadirPasajero extends JFrame {
                 correoTexfield.setText("");
                 direccionTexfield.setText("");
                 DNITexfield.setText("");
-
             }
         });
 
