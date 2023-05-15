@@ -9,6 +9,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -87,7 +88,8 @@ public class PestañaPasajeros {
         addPassengerButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                AñadirPasajero v = new AñadirPasajero(passengerTable);
+                AñadirPasajero v = new AñadirPasajero();
+                v.actionPerformed(e,passengerTable);
                 try {
                     actualizarTabla(passengerTable);
                 } catch (SQLException ex) {
@@ -111,10 +113,13 @@ public class PestañaPasajeros {
 
                 if (flag) {
                     try {
-                        EditarPasajero ed = new EditarPasajero(selec, passengerTable);
+                        EditarPasajero ed = new EditarPasajero();
+                        ed.actionPerformed(e,selec,passengerTable);
                     }
                     catch (SQLException ex) {
                         throw new RuntimeException ( ex );
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
                     }
                     try {
                         conexionBD.cerrarConexion();

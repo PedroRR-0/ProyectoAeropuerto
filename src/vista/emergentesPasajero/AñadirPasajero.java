@@ -1,187 +1,166 @@
 package vista.emergentesPasajero;
 
+import com.toedter.calendar.JCalendar;
 import modelo.ConexionBD;
-import vista.PestañaPasajeros;
 
 import javax.swing.*;
-import java.awt.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class AñadirPasajero extends JFrame {
-    public AñadirPasajero ( JTable flightsTable ){
-        this.setLayout(new BorderLayout());
-        JLabel vueloLabel = new JLabel("Pasajeros");
-        JPanel vueloPanel = new JPanel();
-        vueloPanel.add(vueloLabel);
-        this.add(vueloPanel, BorderLayout.NORTH);
-        JPanel datosPasajeros = new JPanel();
-        datosPasajeros.setLayout(new GridLayout(6,2));
-
-        JLabel DNILabel = new JLabel("DNI: ");
-        datosPasajeros.add(DNILabel);
-        JTextField DNITexfield = new JTextField();
-        datosPasajeros.add(DNITexfield
-        );
-        JLabel nombreLabel = new JLabel("Nombre: ");
-        datosPasajeros.add(nombreLabel);
-        JTextField nombreTexfield = new JTextField();
-        datosPasajeros.add(nombreTexfield);
-
-        JLabel apellido1Label = new JLabel("Apellido1: ");
-        datosPasajeros.add(apellido1Label);
-        JTextField aapellido1Texfield = new JTextField();
-        datosPasajeros.add(aapellido1Texfield);
-
-        JLabel apellido2Label = new JLabel("Apellido2:  ");
-        datosPasajeros.add(apellido2Label);
-        JTextField apellido2Texfield = new JTextField();
-        datosPasajeros.add(apellido2Texfield);
-
-        JLabel edadLabel = new JLabel("Fecha Nacimiento: ");
-        datosPasajeros.add(edadLabel);
-        JTextField edadTexfield = new JTextField();
-        datosPasajeros.add(edadTexfield);
-
-        JLabel telefonoLabel = new JLabel("Teléfono: ");
-        datosPasajeros.add(telefonoLabel);
-        JTextField telefonoTexfield = new JTextField();
-        datosPasajeros.add(telefonoTexfield);
-
-        JLabel correoLabel = new JLabel("Correo Electrónico: ");
-        datosPasajeros.add(correoLabel);
-        JTextField correoTexfield = new JTextField();
-        datosPasajeros.add(correoTexfield);
-
-        JLabel direccionLabel = new JLabel("Dirección: ");
-        datosPasajeros.add(direccionLabel);
-        JTextField direccionTexfield = new JTextField();
-        datosPasajeros.add(direccionTexfield);
-
-        JLabel idVueloLabel = new JLabel("idVuelo: ");
-        datosPasajeros.add(idVueloLabel);
+public class AñadirPasajero {
+    public AñadirPasajero(){
+    }
+    public void actionPerformed(ActionEvent e, JTable tablaPasaj) {
+        // Mostrar una ventana de diálogo para ingresar los datos del nuevo miembro
+        JTextField telefonoField = new JTextField();
+        JTextField nombreField = new JTextField();
+        JTextField apellido1Field = new JTextField();
+        JTextField apellido2Field = new JTextField();
+        JTextField direccionField = new JTextField();
+        JCalendar fechaNacimientoCalendar = new JCalendar();
+        JTextField emailField = new JTextField();
+        JTextField dniField = new JTextField();
+        JButton selecFoto = new JButton("Seleccionar");
+        JFileChooser fileChooser = new JFileChooser();
+        FileNameExtensionFilter imgFilter = new FileNameExtensionFilter("Imágenes", "jpg", "jpeg", "png");
+        fileChooser.addChoosableFileFilter(imgFilter);
         JComboBox<String> idAvionesCombo = new JComboBox<>();
         ConexionBD con = new ConexionBD();
         String query = "SELECT distinct(idVuelo) from vuelos ";
         ResultSet resul = con.ejecutarConsulta(query);
-        while(true){
+        while (true) {
             try {
                 if (!resul.next()) break;
                 idAvionesCombo.addItem(String.valueOf(resul.getInt("idVuelo")));
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
             }
 
         }
-        datosPasajeros.add(idAvionesCombo);
-
-        JButton aceptar = new JButton("ACEPTAR");
-        JButton limpiar = new JButton("LIMPIAR CAMPOS");
-        JPanel botones = new JPanel();
-
-        aceptar.addActionListener(new ActionListener() {
+        ActionListener fotoChooser = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Obtener los valores de los campos de texto y el combo box
-                String dni = DNITexfield.getText();
-                String nombre = nombreTexfield.getText();
-                String apellido1 = aapellido1Texfield.getText();
-                String apellido2 = apellido2Texfield.getText();
-                String edad = edadTexfield.getText();
-                String telefono = telefonoTexfield.getText();
-                String correo = correoTexfield.getText();
-                String direccion = direccionTexfield.getText();
-                String idVuelo = (String) idAvionesCombo.getSelectedItem();
-                int numeroIdVuelo = Integer.parseInt(idVuelo);
+                int result = fileChooser.showOpenDialog(null);
+                if (result == JFileChooser.APPROVE_OPTION) {
+                    // Obtener el archivo seleccionado
+                    File selectedFile = fileChooser.getSelectedFile();
+                    System.out.println("Archivo seleccionado: " + selectedFile.getAbsolutePath());
+                } else {
+                    JOptionPane.showMessageDialog(null, "No se seleccionó ninguna foto");
+                }
+            }
+        };
+        selecFoto.addActionListener(fotoChooser);
+        Object[] message = {
+                "Nombre:", nombreField,
+                "Primer Apellido:", apellido1Field,
+                "Segundo Apellido:", apellido2Field,
+                "Teléfono:", telefonoField,
+                "Dirección:", direccionField,
+                "Fecha de Nacimiento:", fechaNacimientoCalendar,
+                "Email:", emailField,
+                "DNI: ", dniField,
+                "Foto:", selecFoto,
+                "ID Vuelo: ", idAvionesCombo
+        };
+        UIManager.put("OptionPane.cancelButtonText", "Cancelar");
+        int option = JOptionPane.showConfirmDialog(null, message, "Agregar Nuevo Pasajero", JOptionPane.OK_CANCEL_OPTION);
+        if (option == JOptionPane.OK_OPTION) {
+            // Obtener los datos ingresados por el usuario
+            String telefono = telefonoField.getText();
+            String nombre = nombreField.getText();
+            String apellido1 = apellido1Field.getText();
+            String apellido2 = apellido2Field.getText();
+            String direccion = direccionField.getText();
+            String fechanac = String.format("%tF", fechaNacimientoCalendar.getCalendar());
+            String email = emailField.getText();
+            String dni = dniField.getText();
+            String idVuelo = (String) idAvionesCombo.getSelectedItem();
+            int numeroIdVuelo = Integer.parseInt(idVuelo);
 
+            // Obtener la ruta de la imagen seleccionada
+            File selectedFile = fileChooser.getSelectedFile();
+            String imagePath = selectedFile.getAbsolutePath();
 
-                // Guardar los datos en la base de datos
-                ConexionBD con = new ConexionBD();
-                int idAvion = 0; // Variable para guardar el valor de idVuelo
-                try {
-                    String query = "SELECT idAvion FROM vuelos WHERE idVuelo = ?";
-                    PreparedStatement statement = con.getConexion().prepareStatement(query);
-                    statement.setInt(1, numeroIdVuelo);
-                    ResultSet resultSet = statement.executeQuery();
-                    if (resultSet.next()) {
-                        idAvion = resultSet.getInt("idAvion");
-                    }
+            // Leer la imagen como un arreglo de bytes
+            byte[] imagenBytes = leerImagenBytes(imagePath);
 
-                    PreparedStatement p = con.getConexion().prepareStatement("""
-                INSERT INTO pasajeros(DNI, Nombre, Apellido1, Apellido2, fechaNacimiento, Telefono, ecorreo, Direccion)
-                VALUES (?,?,?,?,?,?,?,?);
+            // Insertar el nuevo miembro en la base de datos con la imagen
+            con = new ConexionBD();
+            int idAvion = 0; // Variable para guardar el valor de idVuelo
+            try {
+                String query2 = "SELECT idAvion FROM vuelos WHERE idVuelo = ?";
+                PreparedStatement statement = con.getConexion().prepareStatement(query2);
+                statement.setInt(1,numeroIdVuelo);
+                ResultSet resultSet = statement.executeQuery();
+                if (resultSet.next()) {
+                    idAvion = resultSet.getInt("idAvion");
+                }
+
+                PreparedStatement p = con.getConexion().prepareStatement("""
+                INSERT INTO pasajeros(DNI, Nombre, Apellido1, Apellido2, fechaNacimiento, Telefono, ecorreo, Direccion,foto)
+                VALUES (?,?,?,?,?,?,?,?,?);
             """);
-                    p.setString(1, dni);
-                    p.setString(2, nombre);
-                    p.setString(3, apellido1);
-                    p.setString(4, apellido2);
-                    p.setString(5, edad);
-                    p.setString(6, telefono);
-                    p.setString(7, correo);
-                    p.setString(8, direccion);
-                    p.executeUpdate();
-                    String query2 = "SELECT idPasajeros from pasajeros where dni=" + dni;
-                    String idPasajeroAA= "";
-                    ResultSet resul = con.ejecutarConsulta(query2);
-                    while(true){
-                        try {
-                            if (!resul.next()) break;
-                            idPasajeroAA = String.valueOf(resul.getInt("idPasajeros"));
-                        } catch (SQLException e2) {
-                            throw new RuntimeException(e2);
-                        }
-
+                p.setString(1, dni);
+                p.setString(2, nombre);
+                p.setString(3, apellido1);
+                p.setString(4, apellido2);
+                p.setString(5,fechanac);
+                p.setString(6, telefono);
+                p.setString(7, email);
+                p.setString(8, direccion);
+                p.setBytes(9,imagenBytes);
+                p.executeUpdate();
+                String query3 = "SELECT idPasajeros from pasajeros where dni=" + "'"+dni+"'";
+                String idPasajeroAA= "";
+                ResultSet resul2 = con.ejecutarConsulta(query3);
+                while(true){
+                    try {
+                        if (!resul2.next()) break;
+                        idPasajeroAA = String.valueOf(resul2.getInt("idPasajeros"));
+                    } catch (SQLException e2) {
+                        throw new RuntimeException(e2);
                     }
-                    PreparedStatement p2 = con.getConexion().prepareStatement("""
+
+                }
+                PreparedStatement p2 = con.getConexion().prepareStatement("""
                 INSERT INTO pasajeros_vuelos(idVuelo,idAvion,idPasajeros)
                 VALUES (?,?,?);
             """);
-                    p2.setInt ( 1,numeroIdVuelo);
-                    p2.setInt ( 2,idAvion );
-                    p2.setInt ( 3,Integer.parseInt ( idPasajeroAA ) );
-                    p2.executeUpdate ();
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
-                }
-
-                // Actualizar la tabla de vuelos
-                PestañaPasajeros p = null;
-                p = new PestañaPasajeros ();
-                try {
-                    p.actualizarTabla(flightsTable );
-                }
-                catch (SQLException ex) {
-                    throw new RuntimeException ( ex );
-                }
-                dispose ();
+                p2.setInt ( 1,numeroIdVuelo);
+                p2.setInt ( 2,idAvion );
+                p2.setInt ( 3,Integer.parseInt ( idPasajeroAA ) );
+                p2.executeUpdate ();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
             }
-        });
-
-        limpiar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                idAvionesCombo.setSelectedItem("1");
-                nombreTexfield.setText("");
-                aapellido1Texfield.setText("");
-                apellido2Texfield.setText("");
-                edadTexfield.setText("");
-                telefonoTexfield.setText("");
-                correoTexfield.setText("");
-                direccionTexfield.setText("");
-                DNITexfield.setText("");
-            }
-        });
-
-        botones.add(aceptar);
-        botones.add(limpiar);
-        this.add(botones,BorderLayout.SOUTH);
-        this.add(datosPasajeros,BorderLayout.CENTER);
-        this.pack();
-        this.setVisible(true);
+        }
     }
-
-
+    private byte[] leerImagenBytes(String imagePath) {
+        File file = new File(imagePath);
+        byte[] imagenBytes = new byte[(int) file.length()];
+        FileInputStream fileInputStream = null;
+        try {
+            fileInputStream = new FileInputStream(file);
+            fileInputStream.read(imagenBytes);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        } finally {
+            try {
+                if (fileInputStream != null) {
+                    fileInputStream.close();
+                }
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+        return imagenBytes;
+    }
 }
