@@ -58,7 +58,7 @@ public class AñadirTripulante {
                 "Categoría:", categoriaComboBox,
                 "Foto:", selecFoto
         };
-
+        UIManager.put("OptionPane.cancelButtonText", "Cancelar");
         int option = JOptionPane.showConfirmDialog(null, message, "Agregar Nuevo Miembro", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
             // Obtener los datos ingresados por el usuario

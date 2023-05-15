@@ -83,6 +83,10 @@ public class PestañaAsignacion {
         JLabel horaVuelo = new JLabel();
         JLabel fechaVuelo = new JLabel();
         JTextArea pasajeros = new JTextArea();
+        pasajeros.setEditable(false);
+        pasajeros.setLineWrap(true);
+        pasajeros.setWrapStyleWord(true);
+        pasajeros.setPreferredSize(new Dimension(300, 330));
         trayectoCombo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -110,7 +114,7 @@ public class PestañaAsignacion {
                         pasajeros.setText("");
                         while (res.next()){
                             pasajeros.setText(res.getString("apellido1")+" "+res.getString("apellido2")+
-                                    ", "+res.getString("nombre")+pasajeros.getText());
+                                    ", "+res.getString("nombre")+ "\n" +pasajeros.getText()  );
                         }
                     } catch (SQLException ex) {
                         throw new RuntimeException(ex);
@@ -140,11 +144,12 @@ public class PestañaAsignacion {
                     salida.getString("apellido2"));
             miembrosModel.addElement(miembro);
         }
+
         JTextArea tripSelec = new JTextArea();
         tripSelec.setEditable(false);
         tripSelec.setLineWrap(true);
         tripSelec.setWrapStyleWord(true);
-        tripSelec.setPreferredSize(new Dimension(100, 150));
+        tripSelec.setPreferredSize(new Dimension(200, 100));
         centerLeft.add(avionLabel);
         centerLeft.add(avionBox);
         centerLeft.add(modeloLabel);
@@ -154,7 +159,7 @@ public class PestañaAsignacion {
         centerLeft.add(tripuLabel);
         centerLeft.add(scrollPane);
         centerLeft.add(tripSelec);
-        centerLeft.setPreferredSize(new Dimension(250,300));
+        centerLeft.setPreferredSize(new Dimension(250,370));
         ArrayList<Miembro2> miembrosSelec = new ArrayList<>();
         miembrosList.addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -176,9 +181,13 @@ public class PestañaAsignacion {
                 }
             }
         });
+        centerRight.setBorder(BorderFactory.createTitledBorder("Pasajeros"));
         centerRight.add(pasajeros);
         center.add(centerLeft);
         center.add(centerRight);
+
+
+
         JPanel sur = new JPanel();
         JButton listo = new JButton("¡Listo!");
         listo.addActionListener(new ActionListener() {
@@ -214,8 +223,8 @@ public class PestañaAsignacion {
                             p.setInt(3, m.getId());
                             p.setString(4, fechaComoString);
                             int res1 = p.executeUpdate();
-                            JOptionPane.showMessageDialog(assignmentsPanel,"Tripulantes añadidos con éxito");
                         }
+                            JOptionPane.showMessageDialog(assignmentsPanel,"Tripulantes añadidos con éxito");
                     } else {
                         UIManager.put("OptionPane.yesButtonText", "Sí");
                         int opt = JOptionPane.showConfirmDialog(assignmentsPanel, "Lo sentimos, ya se asignó ese vuelo. ¿Desea empezar de nuevo?", "Información", JOptionPane.YES_NO_OPTION);
