@@ -280,6 +280,8 @@ public class PestañaTripulantes{
                 if(selectedMember!=null) {
                     EliminarTripulante Eliminar=new EliminarTripulante();
                     Eliminar.actionPerformed(e,miembrosList,miembrosModel);
+                    photolabel.setIcon ( null );
+                    photoLabel.setIcon(null);
                 }else {
                     JOptionPane.showMessageDialog(null, "Debe seleccionar un tripulante.");
                 }
