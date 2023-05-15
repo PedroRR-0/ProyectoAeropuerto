@@ -5,6 +5,7 @@ import modelo.ConexionBD;
 import com.toedter.calendar.JCalendar;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,7 +28,22 @@ public class AñadirTripulante {
         JTextField        emailField = new JTextField();
         String[]          categorias        = { "Piloto", "Copiloto", "Ingeniero de vuelo", "Azafato" };
         JComboBox<String> categoriaComboBox = new JComboBox<>(categorias);
+        JButton selecFoto = new JButton("Seleccionar");
         JFileChooser      fileChooser       = new JFileChooser();
+        ActionListener fotoChooser = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int result = fileChooser.showOpenDialog(null);
+                if (result == JFileChooser.APPROVE_OPTION) {
+                    // Obtener el archivo seleccionado
+                    File selectedFile = fileChooser.getSelectedFile();
+                    System.out.println("Archivo seleccionado: " + selectedFile.getAbsolutePath());
+                } else {
+                    System.out.println("No se seleccionó ningún archivo.");
+                }
+            }
+        };
+        selecFoto.addActionListener(fotoChooser);
         Object[] message = {
                 "Teléfono:", telefonoField,
                 "Nombre:", nombreField,
@@ -37,7 +53,7 @@ public class AñadirTripulante {
                 "Fecha de Nacimiento:", fechaNacimientoCalendar,
                 "Email:", emailField,
                 "Categoría:", categoriaComboBox,
-                "Foto:", fileChooser
+                "Foto:", selecFoto
         };
 
         int option = JOptionPane.showConfirmDialog(null, message, "Agregar Nuevo Miembro", JOptionPane.OK_CANCEL_OPTION);

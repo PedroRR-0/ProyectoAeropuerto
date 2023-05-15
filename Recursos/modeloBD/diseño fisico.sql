@@ -43,7 +43,7 @@ CREATE OR REPLACE TABLE miembros (
   -- Hemos añadido una categoría al tipo enum para considerar mecánicos o ingenieros de vuelo
   fechaNacimiento DATE,
   telefono CHAR(12) UNIQUE,
-foto LONGBLOB,
+	foto LONGBLOB,
   PRIMARY KEY (idTripulacion)
   );
 
@@ -120,6 +120,7 @@ CREATE OR REPLACE TABLE miembros_vuelos (
   idVuelo INT,
   idAvion INT,
   idTripulacion INT,
+  fechaAsig DATE,
   PRIMARY KEY (idVuelo, idAvion, idTripulacion),
   CONSTRAINT fk_vuelos_has_miembros_vuelos
     FOREIGN KEY (idVuelo, idAvion)

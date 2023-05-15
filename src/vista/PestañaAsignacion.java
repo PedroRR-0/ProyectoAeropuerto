@@ -39,7 +39,7 @@ public class PestañaAsignacion {
         JLabel avionLabel = new JLabel("AVIÓN: ");
         JLabel modeloLabel = new JLabel();
         ConexionBD con = new ConexionBD();
-        ResultSet result = con.ejecutarConsulta("SELECT matricula FROM aviones");
+        ResultSet result = con.ejecutarConsulta("SELECT matricula FROM aviones where estado=1");
         JComboBox<String> avionBox = new JComboBox<>();
         JComboBox<Vuelo> trayectoCombo = new JComboBox<>();
         while (result.next()){
