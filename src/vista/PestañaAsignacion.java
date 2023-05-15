@@ -6,6 +6,9 @@ import modelo.Miembro2;
 import modelo.Vuelo;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -24,69 +27,32 @@ import java.util.Iterator;
 public class PestañaAsignacion {
     String idAvion;
     int idVuelo = -1;
+    JTextArea pasajeros = new JTextArea();
     PestañaAsignacion(JTabbedPane tabbedPane) throws SQLException {
         // Pestaña de Asignación
         JPanel assignmentsPanel = new JPanel();
         assignmentsPanel.setLayout ( new BorderLayout ( ) );
         JLabel tit = new JLabel("CONFIRMACIÓN DEL VUELO");
+        tit.setFont(tit.getFont().deriveFont(30f));
+        assignmentsPanel.setBorder(new EmptyBorder(30,0,0,0));
         JPanel norte = new JPanel();
         norte.add(tit);
         assignmentsPanel.add(norte,BorderLayout.NORTH);
         JPanel center = new JPanel();
+        center.setBorder(new EmptyBorder(20,0,0,0));
         JPanel centerLeft = new JPanel();
         JPanel centerRight = new JPanel();
-        centerLeft.setBorder(new TitledBorder("Logística Vuelo: "));
+        TitledBorder borde1 = new TitledBorder("LOGÍSTICA VUELO");
+        borde1.setTitleFont(borde1.getTitleFont().deriveFont(20f));
+        centerLeft.setBorder(borde1);
         JLabel avionLabel = new JLabel("AVIÓN: ");
         JLabel modeloLabel = new JLabel();
         ConexionBD con = new ConexionBD();
         ResultSet result = con.ejecutarConsulta("SELECT matricula FROM aviones where estado=1");
         JComboBox<String> avionBox = new JComboBox<>();
         JComboBox<Vuelo> trayectoCombo = new JComboBox<>();
-        while (result.next()){
-
-            avionBox.addItem(result.getString("matricula"));
-        }
-        ActionListener listenerAvion = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String selec = (String) avionBox.getSelectedItem();
-                String query = "SELECT idAvion, modelo from aviones where matricula like "+"'"+selec+"'";
-                ResultSet result = con.ejecutarConsulta(query);
-                try {
-                    result.next();
-                    modeloLabel.setText(result.getString("modelo"));
-                    idAvion = result.getString("idAvion");
-                    String consultaTrayecto = """
-                            SELECT v.idVuelo, v.fecha, v.horaSalida, destino, origen
-                            FROM trayectos t
-                            JOIN vuelos v
-                            ON v.idTrayecto = t.idTrayecto
-                            JOIN aviones a
-                            ON a.idAvion = v.idAvion
-                            WHERE a.idAvion ="""+ idAvion;
-                    result = con.ejecutarConsulta(consultaTrayecto);
-                    trayectoCombo.removeAllItems();
-                    while(result.next()){
-                        Vuelo v = new Vuelo(result.getInt("idVuelo"),result.getString("destino"),result.getString("origen"),
-                                result.getString("fecha"),result.getString("horaSalida"));
-                        trayectoCombo.addItem(v);
-                    }
-
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
-            };
-        avionBox.addActionListener(listenerAvion);
-        avionBox.setSelectedItem(avionBox.getItemAt(0));
-        listenerAvion.actionPerformed(new ActionEvent(avionBox, ActionEvent.ACTION_PERFORMED, ""));
         JLabel horaVuelo = new JLabel();
         JLabel fechaVuelo = new JLabel();
-        JTextArea pasajeros = new JTextArea();
-        pasajeros.setEditable(false);
-        pasajeros.setLineWrap(true);
-        pasajeros.setWrapStyleWord(true);
-        pasajeros.setPreferredSize(new Dimension(300, 330));
         trayectoCombo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -123,6 +89,51 @@ public class PestañaAsignacion {
                 }
             }
         });
+        while (result.next()){
+
+            avionBox.addItem(result.getString("matricula"));
+        }
+        ActionListener listenerAvion = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selec = (String) avionBox.getSelectedItem();
+                String query = "SELECT idAvion, modelo from aviones where matricula like "+"'"+selec+"'";
+                ResultSet result = con.ejecutarConsulta(query);
+                try {
+                    result.next();
+                    modeloLabel.setText(result.getString("modelo"));
+                    idAvion = result.getString("idAvion");
+                    String consultaTrayecto = """
+                            SELECT v.idVuelo, v.fecha, v.horaSalida, destino, origen
+                            FROM trayectos t
+                            JOIN vuelos v
+                            ON v.idTrayecto = t.idTrayecto
+                            JOIN aviones a
+                            ON a.idAvion = v.idAvion
+                            WHERE a.idAvion ="""+ idAvion;
+                    result = con.ejecutarConsulta(consultaTrayecto);
+                    pasajeros.setText("");
+                    trayectoCombo.removeAllItems();
+                    while(result.next()){
+                        Vuelo v = new Vuelo(result.getInt("idVuelo"),result.getString("destino"),result.getString("origen"),
+                                result.getString("fecha"),result.getString("horaSalida"));
+                        trayectoCombo.addItem(v);
+                    }
+
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+            };
+        avionBox.addActionListener(listenerAvion);
+        avionBox.setSelectedItem(avionBox.getItemAt(0));
+        listenerAvion.actionPerformed(new ActionEvent(avionBox, ActionEvent.ACTION_PERFORMED, ""));
+
+        pasajeros.setEditable(false);
+        pasajeros.setLineWrap(true);
+        pasajeros.setWrapStyleWord(true);
+        pasajeros.setPreferredSize(new Dimension(300, 330));
+        pasajeros.setBorder(new LineBorder(Color.BLACK,2));
 
         JLabel vueloLabel = new JLabel("VUELO: ");
         JLabel tripuLabel = new JLabel("TRIPULACIÓN: ");
@@ -149,6 +160,7 @@ public class PestañaAsignacion {
         tripSelec.setEditable(false);
         tripSelec.setLineWrap(true);
         tripSelec.setWrapStyleWord(true);
+        tripSelec.setBorder(BorderFactory.createLineBorder(Color.BLACK,2));
         tripSelec.setPreferredSize(new Dimension(200, 100));
         centerLeft.add(avionLabel);
         centerLeft.add(avionBox);
@@ -156,10 +168,12 @@ public class PestañaAsignacion {
         centerLeft.add(vueloLabel);
         centerLeft.add(trayectoCombo);
         centerLeft.add(fechaVuelo);
-        centerLeft.add(tripuLabel);
-        centerLeft.add(scrollPane);
+        JPanel tripu = new JPanel();
+        tripu.setPreferredSize(new Dimension(200,200));
+        tripu.add(tripuLabel);
+        tripu.add(scrollPane);
+        centerLeft.add(tripu);
         centerLeft.add(tripSelec);
-        centerLeft.setPreferredSize(new Dimension(250,370));
         ArrayList<Miembro2> miembrosSelec = new ArrayList<>();
         miembrosList.addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -170,18 +184,33 @@ public class PestañaAsignacion {
                             miembrosSelec.add(selec);
                             tripSelec.append(selec.toString()+"\n");
 
-                    } else {
+                    } else if (selec!=null) {
                         UIManager.put("OptionPane.yesButtonText", "Sí");
-                        int opt = JOptionPane.showConfirmDialog(null, "Solo puede añadir 5 tripulantes. ¿Desea empezar de nuevo?", "Información",JOptionPane.YES_NO_OPTION);
+                        int opt = JOptionPane.showConfirmDialog(assignmentsPanel, "Solo puede añadir 5 tripulantes. ¿Desea empezar de nuevo?", "Información",JOptionPane.YES_NO_OPTION);
                         if (opt == JOptionPane.YES_NO_OPTION){
                             miembrosSelec.clear();
                             tripSelec.setText("");
+                            miembrosList.clearSelection();
                         }
                     }
                 }
             }
         });
-        centerRight.setBorder(BorderFactory.createTitledBorder("Pasajeros"));
+        JButton limpiar = new JButton("Limpiar");
+        limpiar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                miembrosSelec.clear();
+                tripSelec.setText("");
+                miembrosList.clearSelection();
+            }
+        });
+        centerLeft.add(limpiar);
+        centerLeft.setPreferredSize(new Dimension(250,450));
+        TitledBorder borde2 = new TitledBorder("PASAJEROS");
+        borde2.setTitleFont(borde2.getTitleFont().deriveFont(20f));
+        borde2.setBorder(new EmptyBorder(0,40,75,0));
+        centerRight.setBorder(borde2);
         centerRight.add(pasajeros);
         center.add(centerLeft);
         center.add(centerRight);
@@ -227,11 +256,19 @@ public class PestañaAsignacion {
                             JOptionPane.showMessageDialog(assignmentsPanel,"Tripulantes añadidos con éxito");
                     } else {
                         UIManager.put("OptionPane.yesButtonText", "Sí");
-                        int opt = JOptionPane.showConfirmDialog(assignmentsPanel, "Lo sentimos, ya se asignó ese vuelo. ¿Desea empezar de nuevo?", "Información", JOptionPane.YES_NO_OPTION);
+                        int opt = JOptionPane.showConfirmDialog(assignmentsPanel, "Ya se asignó ese vuelo. ¿Desea borrar la asignación existente?", "Información", JOptionPane.YES_NO_OPTION);
                         if (opt == JOptionPane.YES_NO_OPTION) {
+                            p = con.getConexion().prepareStatement("""
+                            delete from miembros_vuelos
+                            where idVuelo = ? and idAvion = ?;
+                            """);
+                            p.setInt(1, idVuelo);
+                            p.setInt(2, Integer.parseInt(idAvion));
+                            int res1 = p.executeUpdate();
                             miembrosSelec.clear();
                             tripSelec.setText("");
                             avionBox.setSelectedItem(avionBox.getItemAt(0));
+                            miembrosList.clearSelection();
 
                         }
                     }
@@ -241,6 +278,9 @@ public class PestañaAsignacion {
                 }
             }
         });
+        sur.setBorder(new EmptyBorder(0,0,20,0));
+        listo.setPreferredSize(new Dimension(150,50));
+        listo.setFont(listo.getFont().deriveFont(20f));
         sur.add(listo);
         assignmentsPanel.add(sur, BorderLayout.SOUTH);
         assignmentsPanel.add(center,BorderLayout.CENTER);
