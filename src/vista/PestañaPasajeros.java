@@ -61,7 +61,6 @@ public class PestañaPasajeros {
                             resultado.getString("telefono"),
                             resultado.getString("ecorreo"),
                             resultado.getString("direccion"),
-                            resultado.getString("idVuelo")
                     });
                 }
         }
