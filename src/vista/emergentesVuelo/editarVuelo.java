@@ -6,6 +6,7 @@ import com.toedter.calendar.JDateChooser;
 import vista.PestaniaVuelos;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -18,31 +19,27 @@ import java.text.SimpleDateFormat;
 public class editarVuelo extends JFrame {
 
     public editarVuelo(String selec, JTable flightsTable){
-
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
         this.setLayout(new BorderLayout());
         JLabel vueloLabel = new JLabel("VUELO");
         JPanel vueloPanel = new JPanel();
         vueloPanel.add(vueloLabel);
+        vueloPanel.setBorder(new EmptyBorder(10,10,10,10));
         this.add(vueloPanel, BorderLayout.NORTH);
         JPanel datosVuelo = new JPanel();
-        datosVuelo.setLayout(new GridLayout(7,2));
+        GridLayout grid = new GridLayout(7,2);
+        grid.setVgap(10);
+        grid.setHgap(10);
+        datosVuelo.setBorder(new EmptyBorder(10,10,10,10));
+        datosVuelo.setLayout(grid);
         JLabel idAvionLabel = new JLabel("ID AVION: ");
         JLabel idVueloLabel = new JLabel("ID VUELO: ");
         datosVuelo.add(idVueloLabel);
         JComboBox<String> idAvionesCombo = new JComboBox<>();
-        JComboBox<String> idVuelosCombo = new JComboBox<>();
+        JTextField idVuelosCombo = new JTextField();
         ConexionBD con = new ConexionBD();
-        String query = "SELECT idVuelo from vuelos order by 1";
-        ResultSet resul = con.ejecutarConsulta(query);
-        while(true){
-            try {
-                if (!resul.next()) break;
-                idVuelosCombo.addItem(String.valueOf(resul.getInt("idVuelo")));
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-
-        }
+        String query;
+        ResultSet resul;
         datosVuelo.add(idVuelosCombo);
         datosVuelo.add(idAvionLabel);
         query = "SELECT idAvion from aviones where estado=1 order by 1";
@@ -94,12 +91,12 @@ public class editarVuelo extends JFrame {
                 java.util.Date fechaUtil = new java.util.Date(fechaSQL.getTime());
                 fechaChooser.setDate (fechaUtil);
                 // Establecer los valores correspondientes en los componentes de la interfaz de usuario
-                idVuelosCombo.setSelectedItem(String.valueOf(result.getInt("idVuelo")));
+                idVuelosCombo.setText(String.valueOf(result.getInt("idVuelo")));
                 idAvionesCombo.setSelectedItem(String.valueOf(result.getInt("idAvion")));
                 origenTexfield.setText(result.getString("origen"));
                 destinoTexfield.setText(result.getString("destino"));
-                horaSalidaTexfield.setText(result.getString("horaSalida"));
-                horaLlegadaTexfield.setText(result.getString("horaLlegada"));
+                horaSalidaTexfield.setText(timeFormat.format(result.getTime("horaSalida")));
+                horaLlegadaTexfield.setText(timeFormat.format(result.getTime("horaLlegada")));
             }
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
@@ -153,12 +150,12 @@ public class editarVuelo extends JFrame {
                     p.setString(2,horaSalidaTexfield.getText());
                     p.setString(3, horaLlegadaTexfield.getText());
                     p.setInt(4, Integer.parseInt((String) idAvionesCombo.getSelectedItem()));
-                    p.setInt(5, Integer.parseInt((String) idVuelosCombo.getSelectedItem()));
+                    p.setInt(5, Integer.parseInt(idVuelosCombo.getText()));
                     p.setInt(6,idTray);
                     p.setInt(7, Integer.parseInt(selec));
                     p.executeUpdate();
                 } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
+                    JOptionPane.showMessageDialog(vueloPanel,"Ya existe un vuelo con ese identificador, por favor eliga un identifiador distinto");
                 }
                 PestaniaVuelos p = null;
                 try {
@@ -191,6 +188,7 @@ public class editarVuelo extends JFrame {
         });
         botones.add(aceptar);
         botones.add(limpiar);
+        botones.setBorder(new EmptyBorder(0,0,20,0));
         this.add(botones,BorderLayout.SOUTH);
         this.add(datosVuelo,BorderLayout.CENTER);
         this.pack();

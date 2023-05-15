@@ -10,6 +10,8 @@ import com.toedter.calendar.JDateChooser;
 import vista.PestaniaVuelos;
 
 import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -26,9 +28,14 @@ public class anadirVuelo extends JFrame {
         JLabel vueloLabel = new JLabel("VUELO");
         JPanel vueloPanel = new JPanel();
         vueloPanel.add(vueloLabel);
+        vueloPanel.setBorder(new EmptyBorder(10,0,0,0));
         this.add(vueloPanel, BorderLayout.NORTH);
         JPanel datosVuelo = new JPanel();
-        datosVuelo.setLayout(new GridLayout(6,2));
+        GridLayout grid = new GridLayout(6,2);
+        grid.setVgap(10);
+        grid.setHgap(10);
+        datosVuelo.setBorder(new EmptyBorder(10,10,10,10));
+        datosVuelo.setLayout(grid);
         JLabel idAvionLabel = new JLabel("ID AVION: ");
         datosVuelo.add(idAvionLabel);
         JComboBox<String> idAvionesCombo = new JComboBox<>();
@@ -70,6 +77,7 @@ public class anadirVuelo extends JFrame {
         JButton aceptar = new JButton("ACEPTAR");
         JButton limpiar = new JButton("LIMPIAR CAMPOS");
         JPanel botones = new JPanel();
+        botones.setBorder(new EmptyBorder(0,0,10,0));
         aceptar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
