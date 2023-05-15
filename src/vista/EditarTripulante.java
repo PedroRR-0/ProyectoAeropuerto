@@ -4,7 +4,9 @@ import controlador.Logomens;
 import modelo.ConexionBD;
 import com.toedter.calendar.JCalendar;
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -63,7 +65,24 @@ public class EditarTripulante {
         String[] categorias = { "Piloto", "Copiloto", "Ingeniero de vuelo", "Azafato" };
         JComboBox<String> categoriaComboBox = new JComboBox<>(categorias);
         categoriaComboBox.setSelectedItem(categoria);
-        JFileChooser fileChooser = new JFileChooser();
+        JButton selecFoto = new JButton("Seleccionar");
+        JFileChooser      fileChooser       = new JFileChooser();
+        FileNameExtensionFilter imgFilter = new FileNameExtensionFilter("Imágenes", "jpg", "jpeg", "png");
+        fileChooser.addChoosableFileFilter(imgFilter);
+        ActionListener fotoChooser = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int result = fileChooser.showOpenDialog(null);
+                if (result == JFileChooser.APPROVE_OPTION) {
+                    // Obtener el archivo seleccionado
+                    File selectedFile = fileChooser.getSelectedFile();
+                    System.out.println("Archivo seleccionado: " + selectedFile.getAbsolutePath());
+                } else {
+                    System.out.println("No se seleccionó ningún archivo.");
+                }
+            }
+        };
+        selecFoto.addActionListener(fotoChooser);
         Object[] message = {
                 "Teléfono:", telefonoField,
                 "Nombre:", nombreField,
@@ -73,7 +92,7 @@ public class EditarTripulante {
                 "Fecha de Nacimiento:", fechaNacimientoCalendar,
                 "Email:", emailField,
                 "Categoría:", categoriaComboBox,
-                "Foto:", fileChooser
+                "Foto:", selecFoto
         };
         int option = JOptionPane.showConfirmDialog(null, message, "Editar Miembro", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {

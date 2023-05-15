@@ -4,6 +4,7 @@ import controlador.Logomens;
 import modelo.ConexionBD;
 import com.toedter.calendar.JCalendar;
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.ByteArrayOutputStream;
@@ -30,6 +31,8 @@ public class AñadirTripulante {
         JComboBox<String> categoriaComboBox = new JComboBox<>(categorias);
         JButton selecFoto = new JButton("Seleccionar");
         JFileChooser      fileChooser       = new JFileChooser();
+        FileNameExtensionFilter imgFilter = new FileNameExtensionFilter("Imágenes", "jpg", "jpeg", "png");
+        fileChooser.addChoosableFileFilter(imgFilter);
         ActionListener fotoChooser = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -39,7 +42,7 @@ public class AñadirTripulante {
                     File selectedFile = fileChooser.getSelectedFile();
                     System.out.println("Archivo seleccionado: " + selectedFile.getAbsolutePath());
                 } else {
-                    System.out.println("No se seleccionó ningún archivo.");
+                    JOptionPane.showMessageDialog(null, "No se seleccionó ninguna foto");
                 }
             }
         };
