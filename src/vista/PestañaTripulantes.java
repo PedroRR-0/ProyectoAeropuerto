@@ -13,6 +13,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -212,7 +213,7 @@ public class PestañaTripulantes{
                                     photoLabel.setVerticalAlignment(JLabel.CENTER); // Centrar la imagen verticalmente
                                 }
                                 catch (NullPointerException ex) {
-                                    ImageIcon imagen2 = new ImageIcon("Recursos/default.png");
+                                    ImageIcon imagen2 = new ImageIcon(getClass().getResource("/default.png"));
                                     Image imagen3 = imagen2.getImage().getScaledInstance(150, 150, Image.SCALE_DEFAULT);
                                     ImageIcon imagen4 = new ImageIcon(imagen3);
                                     photolabel.setIcon(imagen4);
@@ -252,7 +253,12 @@ public class PestañaTripulantes{
             public void actionPerformed( ActionEvent e ){
                 String selectedMember=miembrosList.getSelectedValue();
                 if(selectedMember!=null) {
-                    EditarTripulante editar = new EditarTripulante();
+                    EditarTripulante editar = null;
+                    try {
+                        editar = new EditarTripulante();
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
                     try {
                         editar.actionPerformed(e, selectedMember, miembrosModel );
                     }
@@ -281,7 +287,14 @@ public class PestañaTripulantes{
         addButton.addActionListener(new ActionListener(){
 
             public void actionPerformed( ActionEvent e ){
-                AñadirTripulante Añadir =new AñadirTripulante();
+                AñadirTripulante Añadir = null;
+                try {
+                    Añadir = new AñadirTripulante();
+                } catch (URISyntaxException ex) {
+                    throw new RuntimeException(ex);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
                 try {
                     Añadir.actionPerformed(e,miembrosModel);
                 }

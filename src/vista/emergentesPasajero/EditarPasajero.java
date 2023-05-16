@@ -13,6 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -30,7 +31,9 @@ public class EditarPasajero {
     JTextField correoField;
     JTextField direccionField;
     String dni;
-    public EditarPasajero(){}
+    URL imgUrl = getClass().getResource("/default.png");
+    InputStream inputStream = imgUrl.openStream();
+    public EditarPasajero() throws IOException {}
 
 
     public void actionPerformed(ActionEvent e, String selected, JTable vuelosTab) throws IOException, SQLException {
@@ -282,9 +285,8 @@ public class EditarPasajero {
 
             // Si no hay foto disponible en la base de datos, asignar una foto por defecto
             if (fotoBytes == null) {
-                File fotoFile = new File("Recursos/default.png");
                 try {
-                    fotoBytes = leerBytesFoto(fotoFile);
+                    fotoBytes = leerBytesFoto(inputStream);
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -300,6 +302,35 @@ public class EditarPasajero {
     // Método para leer los bytes de una imagen
     public static byte[] leerBytesFoto(File file) throws IOException {
         FileInputStream fis = new FileInputStream(file);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        byte[] buf = new byte[1024];
+        try {
+            for (int readNum; (readNum = fis.read(buf)) != -1; ) {
+                bos.write(buf, 0, readNum);
+            }
+        } catch (IOException ex) {
+            throw ex;
+        }
+        byte[] bytes = bos.toByteArray();
+        fis.close();
+
+        // Redimensionar la imagen a 200x200 píxeles
+        BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(bytes));
+        Image resizedImage  = originalImage.getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+        BufferedImage resizedBufferedImage = new BufferedImage(200, 200, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = resizedBufferedImage.createGraphics();
+        g.drawImage(resizedImage, 0, 0, null);
+        g.dispose();
+
+        // Convertir la imagen redimensionada a un arreglo de bytes
+        ByteArrayOutputStream resizedBos = new ByteArrayOutputStream();
+        ImageIO.write(resizedBufferedImage, "png", resizedBos);
+        byte[] resizedBytes = resizedBos.toByteArray();
+        resizedBos.close();
+
+        return resizedBytes;
+    }
+    public static byte[] leerBytesFoto(InputStream fis) throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         byte[] buf = new byte[1024];
         try {

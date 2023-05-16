@@ -14,12 +14,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class EditarTripulante {
-    public EditarTripulante() {
+    URL imgUrl = getClass().getResource("/default.png");
+    InputStream inputStream = imgUrl.openStream();
+    public EditarTripulante() throws IOException {
     }
 
     public void actionPerformed(ActionEvent e, String selected, DefaultListModel<String> miembrosModel) throws IOException {
@@ -192,9 +195,8 @@ public class EditarTripulante {
 
             // Si no hay foto disponible en la base de datos, asignar una foto por defecto
             if (fotoBytes == null) {
-                File fotoFile = new File("Recursos/default.png");
                 try {
-                    fotoBytes = leerBytesFoto(fotoFile);
+                    fotoBytes = leerBytesFoto(inputStream);
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -210,6 +212,11 @@ public class EditarTripulante {
     // Método para leer los bytes de una imagen
     private byte[] leerBytesFoto(File file) throws IOException {
         byte[] resizedBytes = EditarPasajero.leerBytesFoto(file);
+
+        return resizedBytes;
+    }
+    private byte[] leerBytesFoto(InputStream fis) throws IOException {
+        byte[] resizedBytes = EditarPasajero.leerBytesFoto(fis);
 
         return resizedBytes;
     }

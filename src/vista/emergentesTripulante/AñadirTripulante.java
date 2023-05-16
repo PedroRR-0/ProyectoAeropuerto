@@ -14,14 +14,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class AñadirTripulante {
-    private static final String DEFAULT_IMAGE_PATH = "Recursos/default.png";
+    URL imgUrl = getClass().getResource("/default.png");
+    InputStream inputStream = imgUrl.openStream();
 
-    public AñadirTripulante() {
+
+    public AñadirTripulante() throws URISyntaxException, IOException {
     }
 
     public void actionPerformed(ActionEvent e, DefaultListModel<String> miembrosModel) throws IOException {
@@ -77,7 +82,7 @@ public class AñadirTripulante {
             if (imagePath != null) {
                 fotoBytes = leerImagenBytes(selectedFile);
             } else {
-                fotoBytes = leerImagenBytes( new File ( DEFAULT_IMAGE_PATH ) );
+                fotoBytes = leerImagenBytes(inputStream);
             }
 
             // Insertar el nuevo miembro en la base de datos con la imagen
@@ -165,6 +170,11 @@ public class AñadirTripulante {
 
     private byte[] leerImagenBytes(File file) throws IOException {
         byte[] resizedBytes = EditarPasajero.leerBytesFoto(file);
+
+        return resizedBytes;
+    }
+    private byte[] leerImagenBytes(InputStream fis) throws IOException {
+        byte[] resizedBytes = EditarPasajero.leerBytesFoto(fis);
 
         return resizedBytes;
     }
