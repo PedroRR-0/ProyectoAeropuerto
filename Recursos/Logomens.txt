@@ -348,3 +348,25 @@ Aviones cargados desde el archivo JSON
 Trayectos cargados desde el archivo DAT
 Conexión correcta al Login
 Vuelo añadido correctamente
+Usuarios cargados desde el archivo XML
+Aviones cargados desde el archivo JSON
+Trayectos cargados desde el archivo DAT
+Conexión correcta al Login
+Vuelo eliminado correctamente.
+Vuelo añadido correctamente
+Tripulante editado correctamente.
+Tripulante añadido correctamente.
+Tripulante añadido correctamente.
+Tripulante añadido correctamente.
+Tripulante añadido correctamente.
+Tripulante añadido correctamente.
+Tripulante añadido correctamente.
+Tripulante añadido correctamente.
+Tripulante añadido correctamente.
+Tripulante añadido correctamente.
+Tripulante añadido correctamente.
+Tripulante añadido correctamente.
+Tripulante añadido correctamente.
+Tripulante añadido correctamente.
+Tripulante añadido correctamente.
+Tripulante editado correctamente.

@@ -21,7 +21,6 @@ public class ConexionBD {
             e.printStackTrace();
         }
     }
-
     public ResultSet ejecutarConsulta(String consulta) {
         try {
             // Ejecutar la consulta y obtener el resultado
