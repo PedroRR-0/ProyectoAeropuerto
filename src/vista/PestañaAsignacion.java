@@ -28,6 +28,8 @@ public class PestañaAsignacion {
     String idAvion;
     int idVuelo = -1;
     JTextArea pasajeros = new JTextArea();
+    DefaultListModel <Miembro2> miembrosModel;
+
     PestañaAsignacion(JTabbedPane tabbedPane) throws SQLException {
         // Pestaña de Asignación
         JPanel assignmentsPanel = new JPanel();
@@ -141,7 +143,7 @@ public class PestañaAsignacion {
         JList<Miembro2> miembrosList=new JList<>();
 
         // Crear un modelo de lista por defecto y agregarlo a la lista
-        DefaultListModel <Miembro2> miembrosModel=new DefaultListModel <>();
+        miembrosModel=new DefaultListModel <>();
         miembrosList.setModel(miembrosModel);
         JScrollPane scrollPane=new JScrollPane(miembrosList); // Agregar un JScrollPane para permitir desplazamiento
 
@@ -278,6 +280,7 @@ public class PestañaAsignacion {
                 }
             }
         });
+
         sur.setBorder(new EmptyBorder(0,0,20,0));
         listo.setPreferredSize(new Dimension(150,50));
         listo.setFont(listo.getFont().deriveFont(20f));
@@ -287,5 +290,25 @@ public class PestañaAsignacion {
         tabbedPane.addTab ( "Asignación" , assignmentsPanel);
 
 
+    }
+    public void actualizarListaTripulantes() {
+        // Código para actualizar la lista de tripulantes
+        miembrosModel.clear(); // Limpia el modelo de la lista
+
+        // Obtén los datos actualizados de la base de datos y agrega los miembros al modelo
+        ConexionBD conexionBD2 = new ConexionBD();
+        ResultSet salida;
+        try {
+            salida = conexionBD2.ejecutarConsulta("SELECT * FROM miembros");
+            while (salida.next()) {
+                Miembro2 miembro = new Miembro2(salida.getInt("idTripulacion"),
+                        salida.getString("nombre"),
+                        salida.getString("apellido1"),
+                        salida.getString("apellido2"));
+                miembrosModel.addElement(miembro);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
