@@ -282,7 +282,12 @@ public class PestañaTripulantes{
 
             public void actionPerformed( ActionEvent e ){
                 AñadirTripulante Añadir =new AñadirTripulante();
-                Añadir.actionPerformed(e,miembrosModel);
+                try {
+                    Añadir.actionPerformed(e,miembrosModel);
+                }
+                catch (IOException ex) {
+                    throw new RuntimeException ( ex );
+                }
             }
         });
 

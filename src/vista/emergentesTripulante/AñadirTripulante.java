@@ -3,34 +3,38 @@ package vista.emergentesTripulante;
 import controlador.Logomens;
 import modelo.ConexionBD;
 import com.toedter.calendar.JCalendar;
+
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class AñadirTripulante {
-    public AñadirTripulante(){
+    private static final String DEFAULT_IMAGE_PATH = "Recursos/default.png";
+
+    public AñadirTripulante() {
     }
-    public void actionPerformed(ActionEvent e, DefaultListModel<String> miembrosModel) {
+
+    public void actionPerformed(ActionEvent e, DefaultListModel<String> miembrosModel) throws IOException {
         // Mostrar una ventana de diálogo para ingresar los datos del nuevo miembro
-        JTextField        telefonoField     = new JTextField();
-        JTextField        nombreField       = new JTextField();
-        JTextField        apellido1Field    = new JTextField();
-        JTextField        apellido2Field    = new JTextField();
-        JTextField        direccionField    = new JTextField();
+        JTextField telefonoField = new JTextField();
+        JTextField nombreField = new JTextField();
+        JTextField apellido1Field = new JTextField();
+        JTextField apellido2Field = new JTextField();
+        JTextField direccionField = new JTextField();
         JCalendar fechaNacimientoCalendar = new JCalendar();
-        JTextField        emailField = new JTextField();
-        String[]          categorias        = { "Piloto", "Copiloto", "Ingeniero de vuelo", "Azafato" };
+        JTextField emailField = new JTextField();
+        String[] categorias = {"Piloto", "Copiloto", "Ingeniero de vuelo", "Azafato"};
         JComboBox<String> categoriaComboBox = new JComboBox<>(categorias);
         JButton selecFoto = new JButton("Seleccionar");
-        JFileChooser      fileChooser       = new JFileChooser();
+        JFileChooser fileChooser = new JFileChooser();
         FileNameExtensionFilter imgFilter = new FileNameExtensionFilter("Imágenes", "jpg", "jpeg", "png");
         fileChooser.addChoosableFileFilter(imgFilter);
         ActionListener fotoChooser = new ActionListener() {
@@ -66,17 +70,26 @@ public class AñadirTripulante {
             String nombre = nombreField.getText();
             String apellido1 = apellido1Field.getText();
             String apellido2 = apellido2Field.getText();
-            String direccion = direccionField.getText ();
+            String direccion = direccionField.getText();
             String fechanac = String.format("%tF", fechaNacimientoCalendar.getCalendar());
-            String email = emailField.getText ();
+            String email = emailField.getText();
             String categoria = (String) categoriaComboBox.getSelectedItem();
-
             // Obtener la ruta de la imagen seleccionada
+            // Obtener el archivo seleccionado
             File selectedFile = fileChooser.getSelectedFile();
-            String imagePath = selectedFile.getAbsolutePath();
 
-            // Leer la imagen como un arreglo de bytes
-            byte[] imagenBytes = leerImagenBytes(imagePath);
+            String imagePath = null;
+            if (selectedFile != null) {
+                imagePath = selectedFile.getAbsolutePath();
+            }
+
+            // Leer la foto seleccionada por el usuario y convertirla en un arreglo de bytes
+            byte[] fotoBytes = null;
+            if (imagePath != null) {
+                fotoBytes = leerImagenBytes(selectedFile);
+            } else {
+                fotoBytes = leerImagenBytes( new File ( DEFAULT_IMAGE_PATH ) );
+            }
 
             // Insertar el nuevo miembro en la base de datos con la imagen
             ConexionBD conexionBD = new ConexionBD();
@@ -91,7 +104,7 @@ public class AñadirTripulante {
                 statement.setString(6, fechanac);
                 statement.setString(7, email);
                 statement.setString(8, categoria);
-                statement.setBytes(9, imagenBytes);
+                statement.setBytes(9, fotoBytes);
                 statement.executeUpdate();
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
@@ -109,7 +122,7 @@ public class AñadirTripulante {
             // Actualizar la lista de miembros
             miembrosModel.clear();
             ConexionBD conexionBD2 = new ConexionBD();
-            ResultSet  salida      = conexionBD2.ejecutarConsulta("SELECT * FROM miembros");
+            ResultSet salida = conexionBD2.ejecutarConsulta("SELECT * FROM miembros");
             while (true) {
                 try {
                     if (!salida.next()) {
@@ -156,25 +169,34 @@ public class AñadirTripulante {
             conexionBD2.cerrarConexion();
         }
     }
-
-    private byte[] leerImagenBytes(String imagePath) {
-        File file = new File(imagePath);
-        byte[] imagenBytes = new byte[(int) file.length()];
-        FileInputStream fileInputStream = null;
+    private byte[] leerImagenBytes(File file) throws IOException {
+        FileInputStream fis = new FileInputStream(file);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        byte[] buf = new byte[1024];
         try {
-            fileInputStream = new FileInputStream(file);
-            fileInputStream.read(imagenBytes);
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        } finally {
-            try {
-                if (fileInputStream != null) {
-                    fileInputStream.close();
-                }
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
+            for (int readNum; (readNum = fis.read(buf)) != -1; ) {
+                bos.write(buf, 0, readNum);
             }
+        } catch (IOException ex) {
+            throw ex;
         }
-        return imagenBytes;
+        byte[] bytes = bos.toByteArray();
+        fis.close();
+
+        // Redimensionar la imagen a 200x200 píxeles
+        BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream (bytes));
+        Image resizedImage  = originalImage.getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+        BufferedImage resizedBufferedImage = new BufferedImage(200, 200, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = resizedBufferedImage.createGraphics();
+        g.drawImage(resizedImage, 0, 0, null);
+        g.dispose();
+
+        // Convertir la imagen redimensionada a un arreglo de bytes
+        ByteArrayOutputStream resizedBos = new ByteArrayOutputStream();
+        ImageIO.write(resizedBufferedImage, "png", resizedBos);
+        byte[] resizedBytes = resizedBos.toByteArray();
+        resizedBos.close();
+
+        return resizedBytes;
     }
 }
