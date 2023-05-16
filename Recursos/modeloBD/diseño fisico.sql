@@ -60,7 +60,7 @@ CREATE OR REPLACE TABLE pasajeros (
   apellido2 VARCHAR(45),
   fechaNacimiento DATE,
   ecorreo VARCHAR(45),
-  foto VARCHAR(200),
+  foto longblob,
   telefono CHAR(12),
   direccion VARCHAR(45),
   dni CHAR(9) UNIQUE,
@@ -139,7 +139,7 @@ DELIMITER $$
 
 create function edad (fecha date)
 
-returns int unsigned
+    returns int unsigned
 
 begin
 
