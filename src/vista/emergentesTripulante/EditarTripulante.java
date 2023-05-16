@@ -4,6 +4,7 @@ import controlador.Logomens;
 import modelo.ConexionBD;
 import com.toedter.calendar.JCalendar;
 import vista.PestañaTripulantes;
+import vista.emergentesPasajero.EditarPasajero;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -208,32 +209,7 @@ public class EditarTripulante {
     }
     // Método para leer los bytes de una imagen
     private byte[] leerBytesFoto(File file) throws IOException {
-        FileInputStream fis = new FileInputStream(file);
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        byte[] buf = new byte[1024];
-        try {
-            for (int readNum; (readNum = fis.read(buf)) != -1; ) {
-                bos.write(buf, 0, readNum);
-            }
-        } catch (IOException ex) {
-            throw ex;
-        }
-        byte[] bytes = bos.toByteArray();
-        fis.close();
-
-        // Redimensionar la imagen a 200x200 píxeles
-        BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream (bytes));
-        Image         resizedImage  = originalImage.getScaledInstance(200, 200, Image.SCALE_SMOOTH);
-        BufferedImage resizedBufferedImage = new BufferedImage(200, 200, BufferedImage.TYPE_INT_RGB);
-        Graphics2D g = resizedBufferedImage.createGraphics();
-        g.drawImage(resizedImage, 0, 0, null);
-        g.dispose();
-
-        // Convertir la imagen redimensionada a un arreglo de bytes
-        ByteArrayOutputStream resizedBos = new ByteArrayOutputStream();
-        ImageIO.write(resizedBufferedImage, "png", resizedBos);
-        byte[] resizedBytes = resizedBos.toByteArray();
-        resizedBos.close();
+        byte[] resizedBytes = EditarPasajero.leerBytesFoto(file);
 
         return resizedBytes;
     }

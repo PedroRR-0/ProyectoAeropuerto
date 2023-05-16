@@ -21,10 +21,9 @@ public class CargaDeDatos {
     public void cargarUsuariosDesdeXml( Connection con) {
         try {
             // Cargar el archivo XML
-            File                   archivoXml = new File("Recursos/UsuariosHoy.xml");
             DocumentBuilderFactory factory    = DocumentBuilderFactory.newInstance();
             DocumentBuilder        builder    = factory.newDocumentBuilder();
-            Document               doc        = builder.parse(archivoXml);
+            Document               doc        = builder.parse(getClass().getClassLoader().getResourceAsStream("UsuariosHoy.xml"));
 
             // Obtener la lista de usuarios del archivo XML
             NodeList listaUsuarios = doc.getElementsByTagName("usuario");
@@ -53,7 +52,8 @@ public class CargaDeDatos {
     public void cargaAvionesDesdeJson(Connection con) {
         try {
             // Cargar el archivo JSON
-            BufferedReader reader = new BufferedReader(new FileReader("Recursos/Aviones.json"));
+            InputStream strem = getClass().getClassLoader().getResourceAsStream("Aviones.json");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(strem));
 
             // Crear una instancia de Gson
             Gson gson = new Gson();
@@ -84,11 +84,10 @@ public class CargaDeDatos {
     // Carga de los trayectos desde fichero .dat
     public void cargaTrayectosDesdeDat(Connection con) throws SQLException {
 
-        String filePath = "Recursos/Trayectos.dat";
+        String filePath = "Trayectos.dat";
         try {
             // Extraer los datos del fichero binario
-            FileInputStream fileInputStream = new FileInputStream(filePath);
-            DataInputStream dataInputStream = new DataInputStream(fileInputStream);
+            DataInputStream dataInputStream = new DataInputStream(getClass().getClassLoader().getResourceAsStream(filePath));
             while (dataInputStream.available() > 0) {
                 int number = dataInputStream.readInt();
                 String word1 = new String(dataInputStream.readUTF().getBytes("ISO-8859-1"), "UTF-8");

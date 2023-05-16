@@ -3,6 +3,8 @@ package vista.emergentesTripulante;
 import controlador.Logomens;
 import modelo.ConexionBD;
 import com.toedter.calendar.JCalendar;
+import vista.emergentesPasajero.AñadirPasajero;
+import vista.emergentesPasajero.EditarPasajero;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -37,20 +39,7 @@ public class AñadirTripulante {
         JFileChooser fileChooser = new JFileChooser();
         FileNameExtensionFilter imgFilter = new FileNameExtensionFilter("Imágenes", "jpg", "jpeg", "png");
         fileChooser.addChoosableFileFilter(imgFilter);
-        ActionListener fotoChooser = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int result = fileChooser.showOpenDialog(null);
-                if (result == JFileChooser.APPROVE_OPTION) {
-                    // Obtener el archivo seleccionado
-                    File selectedFile = fileChooser.getSelectedFile();
-                    System.out.println("Archivo seleccionado: " + selectedFile.getAbsolutePath());
-                } else {
-                    JOptionPane.showMessageDialog(null, "No se seleccionó ninguna foto");
-                }
-            }
-        };
-        selecFoto.addActionListener(fotoChooser);
+        AñadirPasajero.selecionDeFoto(selecFoto, fileChooser);
         Object[] message = {
                 "Teléfono:", telefonoField,
                 "Nombre:", nombreField,
@@ -96,16 +85,7 @@ public class AñadirTripulante {
             PreparedStatement statement = null;
             try {
                 statement = conexionBD.getConexion().prepareStatement("INSERT INTO miembros (telefono, nombre, apellido1, apellido2, direccion, fechaNacimiento, ecorreo, categoria, foto) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                statement.setString(1, telefono);
-                statement.setString(2, nombre);
-                statement.setString(3, apellido1);
-                statement.setString(4, apellido2);
-                statement.setString(5, direccion);
-                statement.setString(6, fechanac);
-                statement.setString(7, email);
-                statement.setString(8, categoria);
-                statement.setBytes(9, fotoBytes);
-                statement.executeUpdate();
+                datosTripulante(telefono, nombre, apellido1, apellido2, direccion, fechanac, email, categoria, fotoBytes, statement);
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             } finally {
@@ -169,33 +149,22 @@ public class AñadirTripulante {
             conexionBD2.cerrarConexion();
         }
     }
+
+    public static void datosTripulante(String telefono, String nombre, String apellido1, String apellido2, String direccion, String fechanac, String email, String categoria, byte[] fotoBytes, PreparedStatement statement) throws SQLException {
+        statement.setString(1, telefono);
+        statement.setString(2, nombre);
+        statement.setString(3, apellido1);
+        statement.setString(4, apellido2);
+        statement.setString(5, direccion);
+        statement.setString(6, fechanac);
+        statement.setString(7, email);
+        statement.setString(8, categoria);
+        statement.setBytes(9, fotoBytes);
+        statement.executeUpdate();
+    }
+
     private byte[] leerImagenBytes(File file) throws IOException {
-        FileInputStream fis = new FileInputStream(file);
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        byte[] buf = new byte[1024];
-        try {
-            for (int readNum; (readNum = fis.read(buf)) != -1; ) {
-                bos.write(buf, 0, readNum);
-            }
-        } catch (IOException ex) {
-            throw ex;
-        }
-        byte[] bytes = bos.toByteArray();
-        fis.close();
-
-        // Redimensionar la imagen a 200x200 píxeles
-        BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream (bytes));
-        Image resizedImage  = originalImage.getScaledInstance(200, 200, Image.SCALE_SMOOTH);
-        BufferedImage resizedBufferedImage = new BufferedImage(200, 200, BufferedImage.TYPE_INT_RGB);
-        Graphics2D g = resizedBufferedImage.createGraphics();
-        g.drawImage(resizedImage, 0, 0, null);
-        g.dispose();
-
-        // Convertir la imagen redimensionada a un arreglo de bytes
-        ByteArrayOutputStream resizedBos = new ByteArrayOutputStream();
-        ImageIO.write(resizedBufferedImage, "png", resizedBos);
-        byte[] resizedBytes = resizedBos.toByteArray();
-        resizedBos.close();
+        byte[] resizedBytes = EditarPasajero.leerBytesFoto(file);
 
         return resizedBytes;
     }

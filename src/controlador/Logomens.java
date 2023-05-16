@@ -6,7 +6,7 @@ public class Logomens {
     private PrintWriter logWriter;
     public void escribirRegistro(String mensaje) {
         try {
-            String LOG_FILE = "recursos/Logomens.txt";
+            String LOG_FILE = "C:\\Users\\damda\\Desktop\\jarProy\\Logomens.txt";
             logWriter = new PrintWriter(new FileWriter( LOG_FILE , true));
         } catch (IOException e) {
             e.printStackTrace();

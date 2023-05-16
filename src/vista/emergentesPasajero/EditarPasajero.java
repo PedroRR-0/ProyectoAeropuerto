@@ -298,7 +298,7 @@ public class EditarPasajero {
         return fotoBytes;
     }
     // Método para leer los bytes de una imagen
-    private byte[] leerBytesFoto(File file) throws IOException {
+    public static byte[] leerBytesFoto(File file) throws IOException {
         FileInputStream fis = new FileInputStream(file);
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         byte[] buf = new byte[1024];
