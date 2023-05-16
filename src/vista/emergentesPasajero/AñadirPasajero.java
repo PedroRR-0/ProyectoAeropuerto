@@ -3,13 +3,14 @@ package vista.emergentesPasajero;
 import com.toedter.calendar.JCalendar;
 import modelo.ConexionBD;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -17,7 +18,7 @@ import java.sql.SQLException;
 public class AñadirPasajero {
     public AñadirPasajero(){
     }
-    public void actionPerformed(ActionEvent e, JTable tablaPasaj) {
+    public void actionPerformed(ActionEvent e, JTable tablaPasaj) throws IOException {
         // Mostrar una ventana de diálogo para ingresar los datos del nuevo miembro
         JTextField telefonoField = new JTextField();
         JTextField nombreField = new JTextField();
@@ -90,9 +91,9 @@ public class AñadirPasajero {
             String imagePath = selectedFile.getAbsolutePath();
 
             // Leer la imagen como un arreglo de bytes
-            byte[] imagenBytes = leerImagenBytes(imagePath);
+            byte[] imagenBytes = leerImagenBytes(selectedFile);
             if (imagenBytes != null) {
-                imagenBytes = leerImagenBytes(imagePath);
+                imagenBytes = leerImagenBytes(selectedFile);
             }
             // Insertar el nuevo miembro en la base de datos con la imagen
             con = new ConexionBD();
@@ -145,24 +146,34 @@ public class AñadirPasajero {
             }
         }
     }
-    private byte[] leerImagenBytes(String imagePath) {
-        File file = new File(imagePath);
-        byte[] imagenBytes = new byte[(int) file.length()];
-        FileInputStream fileInputStream = null;
+    private byte[] leerImagenBytes(File file) throws IOException {
+        FileInputStream fis = new FileInputStream(file);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        byte[] buf = new byte[1024];
         try {
-            fileInputStream = new FileInputStream(file);
-            fileInputStream.read(imagenBytes);
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        } finally {
-            try {
-                if (fileInputStream != null) {
-                    fileInputStream.close();
-                }
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
+            for (int readNum; (readNum = fis.read(buf)) != -1; ) {
+                bos.write(buf, 0, readNum);
             }
+        } catch (IOException ex) {
+            throw ex;
         }
-        return imagenBytes;
+        byte[] bytes = bos.toByteArray();
+        fis.close();
+
+        // Redimensionar la imagen a 200x200 píxeles
+        BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(bytes));
+        Image resizedImage  = originalImage.getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+        BufferedImage resizedBufferedImage = new BufferedImage(200, 200, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = resizedBufferedImage.createGraphics();
+        g.drawImage(resizedImage, 0, 0, null);
+        g.dispose();
+
+        // Convertir la imagen redimensionada a un arreglo de bytes
+        ByteArrayOutputStream resizedBos = new ByteArrayOutputStream();
+        ImageIO.write(resizedBufferedImage, "png", resizedBos);
+        byte[] resizedBytes = resizedBos.toByteArray();
+        resizedBos.close();
+
+        return resizedBytes;
     }
 }

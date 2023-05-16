@@ -89,7 +89,11 @@ public class PestañaPasajeros {
             @Override
             public void actionPerformed(ActionEvent e) {
                 AñadirPasajero v = new AñadirPasajero();
-                v.actionPerformed(e,passengerTable);
+                try {
+                    v.actionPerformed(e,passengerTable);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
                 try {
                     actualizarTabla(passengerTable);
                 } catch (SQLException ex) {
