@@ -2,6 +2,8 @@ package vista;
 
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.sql.SQLException;
 
 public
@@ -47,7 +49,16 @@ class Pestanias extends JFrame {
 
         // Agregar las pestañas a la ventana
         add ( tabbedPane );
-
+        tabbedPane.addChangeListener(new ChangeListener () {
+            @Override
+            public void stateChanged( ChangeEvent e) {
+                int selectedIndex = tabbedPane.getSelectedIndex();
+                if (selectedIndex == tabbedPane.indexOfTab("Asignación")) {
+                    // Si se selecciona la pestaña "Asignación", llama al método para actualizar la lista de tripulantes
+                    pestañaAsignacion.actualizarListaTripulantes();
+                }
+            }
+        });
         // Mostrar la ventana principal
         setVisible ( true );
     }
