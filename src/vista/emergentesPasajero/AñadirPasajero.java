@@ -91,7 +91,9 @@ public class AñadirPasajero {
 
             // Leer la imagen como un arreglo de bytes
             byte[] imagenBytes = leerImagenBytes(imagePath);
-
+            if (imagenBytes != null) {
+                imagenBytes = leerImagenBytes(imagePath);
+            }
             // Insertar el nuevo miembro en la base de datos con la imagen
             con = new ConexionBD();
             int idAvion = 0; // Variable para guardar el valor de idVuelo
