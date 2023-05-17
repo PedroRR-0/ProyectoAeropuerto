@@ -1,5 +1,6 @@
 package vista;
 
+import controlador.Logomens;
 import modelo.ConexionBD;
 import modelo.Miembro;
 import modelo.Miembro2;
@@ -256,6 +257,8 @@ public class PestañaAsignacion {
                             int res1 = p.executeUpdate();
                         }
                             JOptionPane.showMessageDialog(assignmentsPanel,"Tripulantes añadidos con éxito");
+                            Logomens log = new Logomens();
+                            log.escribirRegistro("Se asigno el vuelo "+idVuelo);
                     } else {
                         UIManager.put("OptionPane.yesButtonText", "Sí");
                         int opt = JOptionPane.showConfirmDialog(assignmentsPanel, "Ya se asignó ese vuelo. ¿Desea borrar la asignación existente?", "Información", JOptionPane.YES_NO_OPTION);

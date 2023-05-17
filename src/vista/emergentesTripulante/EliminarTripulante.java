@@ -24,7 +24,7 @@ public class EliminarTripulante {
                 // Mostrar un mensaje de confirmación
                 JOptionPane.showMessageDialog(null, "El miembro ha sido eliminado correctamente.");
                 Logomens log = new Logomens ();
-                log.escribirRegistro("Miembro eliminado correctamente.");
+                log.escribirRegistro("Tripulante "+selectedMember+" eliminado");
             }
         } else {
             JOptionPane.showMessageDialog(null, "Debe seleccionar un miembro para eliminar.");

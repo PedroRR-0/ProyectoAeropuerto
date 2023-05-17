@@ -1,6 +1,7 @@
 package vista.emergentesPasajero;
 
 import com.toedter.calendar.JCalendar;
+import controlador.Logomens;
 import modelo.ConexionBD;
 import vista.emergentesTripulante.AñadirTripulante;
 
@@ -15,6 +16,8 @@ import java.io.*;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class AñadirPasajero {
     public AñadirPasajero(){
@@ -116,10 +119,13 @@ public class AñadirPasajero {
                 INSERT INTO pasajeros_vuelos(idVuelo,idAvion,idPasajeros)
                 VALUES (?,?,?);
             """);
+
                 p2.setInt ( 1,numeroIdVuelo);
                 p2.setInt ( 2,idAvion );
                 p2.setInt ( 3,Integer.parseInt ( idPasajeroAA ) );
                 p2.executeUpdate ();
+                Logomens log = new Logomens ();
+                log.escribirRegistro("Pasajero "+idPasajeroAA+" añadido");
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }

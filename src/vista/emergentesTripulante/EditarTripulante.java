@@ -171,7 +171,7 @@ public class EditarTripulante {
             }
 
             Logomens log = new Logomens();
-            log.escribirRegistro("Tripulante editado correctamente.");
+            log.escribirRegistro("Tripulante "+telefonoSeleccionado+" editado");
         }
     }
 
@@ -196,6 +196,7 @@ public class EditarTripulante {
             // Si no hay foto disponible en la base de datos, asignar una foto por defecto
             if (fotoBytes == null) {
                 try {
+                    inputStream = imgUrl.openStream();
                     fotoBytes = leerBytesFoto(inputStream);
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);

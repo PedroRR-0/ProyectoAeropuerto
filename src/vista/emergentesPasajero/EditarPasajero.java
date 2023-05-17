@@ -261,7 +261,7 @@ public class EditarPasajero {
                 throw new RuntimeException ( ex );
             }
             Logomens log = new Logomens();
-            log.escribirRegistro("Tripulante editado correctamente.");
+            log.escribirRegistro("Pasajero "+idPasajero+" editado ");
         }
     }
 

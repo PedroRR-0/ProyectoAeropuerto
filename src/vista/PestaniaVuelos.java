@@ -108,7 +108,7 @@ public class PestaniaVuelos extends JPanel {
                     conexionBD1.ejecutarConsulta("DELETE from vuelos where idVuelo = "+selec);
                     JOptionPane.showMessageDialog(null, "Vuelo borrado con éxito");
                     Logomens log = new Logomens ();
-                    log.escribirRegistro("Vuelo eliminado correctamente.");
+                    log.escribirRegistro("Vuelo "+selec+" eliminado");
                     try {
                         conexionBD.cerrarConexion();
                         actualizarTabla(flightsTable);

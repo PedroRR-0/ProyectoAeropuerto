@@ -137,7 +137,7 @@ public class anadirVuelo extends JFrame {
                     throw new RuntimeException ( ex );
                 }
                 Logomens log = new Logomens ();
-                log.escribirRegistro("Vuelo añadido correctamente");
+                log.escribirRegistro("Vuelo añadido");
                 dispose();
             }
         });

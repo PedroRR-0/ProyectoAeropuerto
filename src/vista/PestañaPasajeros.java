@@ -1,5 +1,6 @@
 package vista;
 
+import controlador.Logomens;
 import modelo.ConexionBD;
 import vista.emergentesPasajero.AñadirPasajero;
 import vista.emergentesPasajero.EditarPasajero;
@@ -151,6 +152,8 @@ public class PestañaPasajeros {
                     ConexionBD conexionBD1 = new ConexionBD ();
                     conexionBD1.ejecutarConsulta("DELETE from pasajeros where idPasajeros = "+selec);
                     JOptionPane.showMessageDialog(null, "Pasajero borrado con éxito");
+                    Logomens log = new Logomens ();
+                    log.escribirRegistro("Pasajero "+selec+" eliminado");
                     try {
                         conexionBD.cerrarConexion();
                         actualizarTabla(passengerTable);

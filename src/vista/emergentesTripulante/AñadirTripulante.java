@@ -149,7 +149,7 @@ public class AñadirTripulante {
                 String miembro = telefonoDB + " " + nombreDB + " " + apellido1DB + " " + apellido2DB + " (" + categoriaDB + ")";
                 miembrosModel.addElement(miembro);
                 Logomens log = new Logomens();
-                log.escribirRegistro("Tripulante añadido correctamente.");
+                log.escribirRegistro("Tripulante "+telefonoDB+" añadido");
             }
             conexionBD2.cerrarConexion();
         }

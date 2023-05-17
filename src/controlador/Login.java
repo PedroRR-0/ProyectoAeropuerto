@@ -17,9 +17,13 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.*;
 import java.sql.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Login {
+    String usuario;
     private Connection conexion;
     public Connection getConnection(){
         try {
@@ -66,7 +70,7 @@ public class Login {
         JButton             botonEntrar = new JButton("Entrar");
         botonEntrar.setBounds(120, 100, 80, 30);
         botonEntrar.addActionListener(event -> {
-            String usuario = nombreUsuario.getText();
+            usuario = nombreUsuario.getText();
             String contrasena = new String(contrasenaText.getPassword());
             autenticado.set(autenticar(usuario, contrasena)); // Actualiza el valor de autenticado
             if (autenticado.get()) {
@@ -107,12 +111,12 @@ public class Login {
     public void entradaCorrecta(){
         JOptionPane.showMessageDialog(null, "Bienvenido!");
         Logomens log = new Logomens ();
-        log.escribirRegistro("Conexión correcta al Login");
+        log.escribirRegistro("Conexión correcta al Login con usuario "+usuario);
     }
     public void entradaIncorrecta(){
         JOptionPane.showMessageDialog(null, "Usuario o contraseña incorrectos. Por favor, inténtelo de nuevo.");
         Logomens log = new Logomens ();
-        log.escribirRegistro("Conexión incorrecta al Login");
+        log.escribirRegistro("Conexión incorrecta al Login con usuario "+usuario);
     }
     public void cerrarConexion() {
         try {

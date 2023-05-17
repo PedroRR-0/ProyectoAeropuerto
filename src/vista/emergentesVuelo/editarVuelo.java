@@ -171,7 +171,7 @@ public class editarVuelo extends JFrame {
                     throw new RuntimeException(ex);
                 }
                 Logomens log = new Logomens();
-                log.escribirRegistro("Vuelo editado correctamente.");
+                log.escribirRegistro("Vuelo "+selec+" editado");
                 dispose();
             }
 
