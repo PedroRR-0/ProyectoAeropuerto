@@ -48,7 +48,6 @@ public class CargaDeDatos {
         Logomens log = new Logomens ();
         log.escribirRegistro("Usuarios cargados desde el archivo XML");
     }
-
     public void cargaAvionesDesdeJson(Connection con) {
         try {
             // Cargar el archivo JSON
@@ -80,8 +79,6 @@ public class CargaDeDatos {
         Logomens log = new Logomens ();
         log.escribirRegistro("Aviones cargados desde el archivo JSON");
     }
-
-    // Carga de los trayectos desde fichero .dat
     public void cargaTrayectosDesdeDat(Connection con) throws SQLException {
 
         String filePath = "Trayectos.dat";
