@@ -14,7 +14,7 @@ public class Logomens {
     String strFechaHora = fech.format(formato);
     public void escribirRegistro(String mensaje) {
         try {
-            String LOG_FILE = "C:\\Users\\DAM\\Desktop\\Logomens.txt";
+            String LOG_FILE = "C:\\Users\\lhuji\\Desktop\\Logomens.txt";
             logWriter = new PrintWriter(new FileWriter( LOG_FILE , true));
         } catch (IOException e) {
             e.printStackTrace();

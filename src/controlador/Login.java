@@ -34,7 +34,7 @@ public class Login {
         }
         Connection con;
         try {
-            con = DriverManager.getConnection("jdbc:mariadb://localhost:3306/proy3te4","root","123456");
+            con = DriverManager.getConnection("jdbc:mariadb://localhost:3306/proy3te4","root","root");
             return con;
         } catch (SQLException e) {
             throw new RuntimeException(e);
