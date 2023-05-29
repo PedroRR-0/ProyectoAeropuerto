@@ -66,7 +66,7 @@ public class Login {
         contrasenaText.setBounds(110, 60, 160, 25);
         panel.add(contrasenaText);
 
-        final AtomicBoolean autenticado = new AtomicBoolean(autenticar("", "")); // Llamada inicial para actualizar autenticado
+            final AtomicBoolean autenticado = new AtomicBoolean(autenticar("", "")); // Llamada inicial para actualizar autenticado
         JButton             botonEntrar = new JButton("Entrar");
         botonEntrar.setBounds(120, 100, 80, 30);
         botonEntrar.addActionListener(event -> {
